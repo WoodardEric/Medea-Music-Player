@@ -26,6 +26,9 @@
     <ClInclude Include="Main.h" />
     <ClInclude Include="MainFrame.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icons.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
