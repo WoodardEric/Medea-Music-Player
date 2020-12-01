@@ -30,6 +30,18 @@ MainFrame::MainFrame(wxSize size)
 		wxID_EXIT);
 	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
 		wxID_ABOUT);
+
+	wxPanel *mainPanel = new wxPanel(this, wxID_ANY);
+	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+
+	//wxPanel *rightPanel = new wxPanel(mainPanel);
+	MiddlePanel *middlePanel = new MiddlePanel(mainPanel);
+	hbox->Add(middlePanel, 1, wxEXPAND | wxALL, 5);
+	PlaylistPanel *rightPanel = new PlaylistPanel(mainPanel);
+	hbox->Add(rightPanel, 1, wxEXPAND | wxALL, 5);
+
+	mainPanel->SetSizer(hbox);
+
 }
 
 void MainFrame::OnExit(wxCommandEvent &WXUNUSED(event))

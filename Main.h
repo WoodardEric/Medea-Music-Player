@@ -3,8 +3,7 @@
 
 #include <wx/wx.h>
 #include "MainFrame.h"
-
-
+#include "portaudio.h"
 
 class MedeaApp : public wxApp
 {

@@ -5,6 +5,8 @@
 #ifndef wxHAS_IMAGES_IN_RESOURCES
 #include "icons.xpm"
 #endif
+#include "PlaylistPanel.h"
+#include "MiddlePanel.h"
 // IDs for the controls and the menu commands
 enum
 {
