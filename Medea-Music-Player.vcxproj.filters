@@ -12,6 +12,12 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{a41d6041-8709-4bea-ad51-cba4c537b784}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\panels">
+      <UniqueIdentifier>{4af6d542-b3fb-4243-975b-69e1193c2673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\panels">
+      <UniqueIdentifier>{8fda0e5c-1eed-4ee7-8e31-da8a4b5b1e02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -20,9 +26,24 @@
     <ClCompile Include="MainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlaylistPanel.cpp" />
-    <ClCompile Include="Playlist.cpp" />
-    <ClCompile Include="MiddlePanel.cpp" />
+    <ClCompile Include="Playlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MiddlePanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaylistPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MusicFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -31,13 +52,22 @@
     <ClInclude Include="MainFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlaylistPanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Playlist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayListCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaylistPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="MiddlePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MusicFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

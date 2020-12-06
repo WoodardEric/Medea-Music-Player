@@ -3,42 +3,52 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+
+using std::ifstream;
 using std::vector;
 using std::string;
 
+struct Track
+{
+	string song;
+	string album;
+	string artist;
+	string genre;
+	short rating;
+	string path;
+	int timesPlayed;
+};
 
+struct Node
+{
+	Node(Track track, Node *next = nullptr, Node *prev = nullptr)
+	{
+		this->track = track;
+		this->next = next;
+		this->prev = prev;
+	}
+	~Node()
+	{
+		next = nullptr;
+		prev = nullptr;
+	}
+	Track track;
+	Node *next;
+	Node *prev;
+};
 
 class Playlist
 {
 
-	struct Track
-	{
-		string song;
-		string album;
-		string artist;
-		string genre;
-		short rating;
-		string path;
-	};
-
-	struct Node
-	{
-		Node(Track track, Node *next = nullptr, Node *prev = nullptr) 
-		{
-			this->track = track;
-			this->next = next;
-			this->prev = prev;
-		}
-		Track track;
-		Node *next;
-		Node *prev;
-	};
+	
 
 public:
 
-	Playlist(int size);
+	Playlist(int size = 0);
 	~Playlist();
 	
+	Node* front() { return mHead; }
 	void readPlayListFile();
 	void writePlayListFile();
 
@@ -57,7 +67,7 @@ private:
 	int mSize;
 	Node *mHead;
 	Node *mTail;
-	vector<int16_t> *frameBuffer;
+	
 };
 
 #endif

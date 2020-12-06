@@ -1,8 +1,9 @@
-
+//https://freeicons.io/icon-list/material-icons-alert-and-av?page=4
 aaaaaaaa ICON "Music.ico"
 
 // this icon is used with wxFrame::SetIcon()
-icon ICON "Music.ico"
+icon ICON "Music.ico 
+
 
 // set this to 1 if you don't want to use manifest resource (manifest resource
 // is needed to enable visual styles on Windows XP - see docs/msw/winxp.txt

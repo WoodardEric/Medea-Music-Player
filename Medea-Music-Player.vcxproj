@@ -19,18 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="MiddlePanel.cpp" />
+    <ClCompile Include="MusicFile.cpp" />
     <ClCompile Include="Playlist.cpp" />
+    <ClCompile Include="PlayListCtrl.cpp" />
     <ClCompile Include="PlaylistPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="MiddlePanel.h" />
+    <ClInclude Include="MusicFile.h" />
     <ClInclude Include="Playlist.h" />
+    <ClInclude Include="PlayListCtrl.h" />
     <ClInclude Include="PlaylistPanel.h" />
+    <ClInclude Include="AudioManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icons.rc" />

@@ -1,12 +1,38 @@
 #include "Playlist.h"
 
+
 Playlist::Playlist(int size)
 {
-    frameBuffer = new vector<int16_t>(size);
+    mHead = nullptr;
+    mTail = nullptr;
+    readPlayListFile();
 }
 
 void Playlist::readPlayListFile()
 {
+    std::ifstream inFile("data/playList.csv");
+
+    if (!inFile)
+    {
+      
+    }
+
+    while (!inFile.eof())
+    {
+        char del;
+        Track rec;
+        getline(inFile, rec.artist, ',');
+        getline(inFile, rec.album, ',');
+        getline(inFile, rec.song, ',');
+        getline(inFile, rec.genre, ',');
+        inFile >> rec.timesPlayed;
+        inFile >> del;
+        inFile >> rec.rating;
+        inFile.get(del);
+
+        addRear(rec);
+    }
+    inFile.close();
 }
 
 void Playlist::writePlayListFile()

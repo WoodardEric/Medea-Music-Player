@@ -1,6 +1,9 @@
-#pragma once
+#ifndef PLAYLISTPANEL_H
+#define PLAYLISTPANEL_H
+
 #include <wx/wx.h>
 #include <wx/listctrl.h>
+#include "PlayListCtrl.h"
 
 enum PlaylistBox
 {
@@ -29,8 +32,9 @@ class PlaylistPanel : public wxPanel
 {
 public:
 	PlaylistPanel(wxWindow *parent);
-    wxListView *mList;
+    PlayListCtrl *mCurrPlaylistCtrl;
 private:
 	
 };
 
+#endif
