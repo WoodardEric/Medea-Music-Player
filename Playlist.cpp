@@ -1,45 +1,47 @@
 #include "Playlist.h"
 
 
-Playlist::Playlist(int size)
+Playlist::Playlist()
 {
     mHead = nullptr;
     mTail = nullptr;
-    readPlayListFile();
+    mSize = 0;
+    mName = "5TrackWonder";
+    //readPlayListFile();
 }
 
-void Playlist::readPlayListFile()
-{
-    std::ifstream inFile("data/playList.csv");
-
-    if (!inFile)
-    {
-      
-    }
-
-    while (!inFile.eof())
-    {
-        char del;
-        Track rec;
-        getline(inFile, rec.artist, ',');
-        getline(inFile, rec.album, ',');
-        getline(inFile, rec.song, ',');
-        getline(inFile, rec.genre, ',');
-        inFile >> rec.timesPlayed;
-        inFile >> del;
-        inFile >> rec.rating;
-        inFile.get(del);
-
-        addRear(rec);
-    }
-    inFile.close();
-}
+//void Playlist::readPlayListFile()
+//{
+//    fstream inFile("data/playList.csv", ios_base::in);
+//
+//    if (!inFile)
+//    {
+//      
+//    }
+//
+//    while (!inFile.eof())
+//    {
+//        char del;
+//        Track rec;
+//        getline(inFile, rec.artist, ',');
+//        getline(inFile, rec.album, ',');
+//        getline(inFile, rec.title, ',');
+//        getline(inFile, rec.genre, ',');
+//        inFile >> rec.timesPlayed;
+//        inFile >> del;
+//        inFile >> rec.rating;
+//        inFile.get(del);
+//
+//        addRear(rec);
+//    }
+//    inFile.close();
+//}
 
 void Playlist::writePlayListFile()
 {
 }
 
-void Playlist::addFront(Track track)
+void Playlist::addFront(Track *track)
 {
     if (mHead == nullptr)
     {
@@ -54,7 +56,7 @@ void Playlist::addFront(Track track)
     ++mSize;
 }
 
-void Playlist::addRear(Track track)
+void Playlist::addRear(Track *track)
 {
     if (mTail == nullptr)
     {
@@ -68,28 +70,105 @@ void Playlist::addRear(Track track)
 
     ++mSize;
 }
-
-void Playlist::insert(Node* node, Track track)
+void Playlist::clear()
+{
+    while (mHead != nullptr)
+    {
+        Node *ptr = mHead;
+        mHead = mHead->next;
+        delete ptr;
+        ptr = mHead;
+    }
+    mTail = nullptr;
+    mSize = 0;
+}
+void Playlist::insert(Node* node, Track *track)
 {
     Node* newNode = new Node(track, node->next, node);
     node->next = newNode;
     newNode->next->prev = newNode;
 }
-
-void Playlist::remove(string song)
+void Playlist::insert(Node *node, long index)
 {
+    Node *ptr = traverse(index);
+   
+    if (node == mHead)
+    {
+        mHead = mHead->next;
+        mHead->prev = nullptr;
+    }
+    if (ptr->next != nullptr)
+    {
+        ptr->next->prev = node;
+        if (ptr->next->next == node)
+        {
+            ptr->next->next = node->next;
+        }
+    }
 
+    if (node->next == ptr)
+    {
+        node->prev->next = ptr;
+        ptr->prev = node->prev;
+        node->next = ptr->next;
+        ptr->next = node;
+        node->prev = ptr;
+    }
+    else
+    {
+        if(node->next != nullptr)
+            node->next->prev = node->prev;
+        if(node->prev != nullptr)
+            node->prev->next = node->next;
+
+        node->next = ptr->next;
+        ptr->next = node;
+        node->prev = ptr;
+    }
+    
+    if (node->next == nullptr)
+    {
+        mTail = node;
+        mTail->next = nullptr;
+    }
+}
+void Playlist::remove(long index)
+{
+    Node *ptr = traverse(index);
+    if (ptr = mHead)
+    {
+        mHead = ptr->next;
+        mHead->prev = nullptr;
+    }
+    else if(ptr = mTail)
+    {
+        mTail = ptr->prev;
+        mTail->next = nullptr;
+    }
+    else
+    {
+        ptr->next->prev = ptr->prev;
+        ptr->prev->next = ptr->next;
+    }
+    delete ptr;
 }
 
 void Playlist::moveTrack()
 {
-}
 
-void Playlist::play(string song)
+}
+Node*  Playlist::traverse(long index)
 {
+    Node *node = mHead;
+    for (int i = 0; i < index; ++i)
+    {
+        node = node->next;
+    }
+    return node;
 }
-
 string Playlist::toString()
 {
     return string();
 }
+
+

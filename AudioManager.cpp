@@ -2,7 +2,7 @@
 
 AudioManager::AudioManager(MusicFile *file) : file(file)
 {
-
+	mFrameCounter = 0;
 	framesPerBuffer = 1024;
 	err = Pa_Initialize();
 	parameters.device = Pa_GetDefaultOutputDevice();
@@ -12,7 +12,6 @@ AudioManager::AudioManager(MusicFile *file) : file(file)
 	parameters.suggestedLatency = deviceInfo->defaultHighOutputLatency;
 	parameters.hostApiSpecificStreamInfo = NULL;
 
-	/*int time = numSamples / header->sampleRate;*/
 	//int numBytes = framesPerBuffer * header->numChannels * header->bitsPerSample;
 
 	bufferSize = (framesPerBuffer * file->getNumChannels());
@@ -49,7 +48,15 @@ void AudioManager::stopStream()
 	err = Pa_StopStream(audioStream);
 }
 
+void AudioManager::closeStream()
+{
+	err = Pa_CloseStream(audioStream);
+}
 
+void AudioManager::Terminate()
+{
+	err = Pa_Terminate();
+}
 
 bool AudioManager::isStreaming()
 {
@@ -88,3 +95,31 @@ void AudioManager::setParameters(int numChannels, int bitsPerSample)
 	//		//error code
 	//	}
 }
+
+string AudioManager::getErrorMessage()
+{
+	return Pa_GetErrorText(err);
+}
+
+void AudioManager::clearBuffer()
+{
+	for (int i = 0; i < bufferSize; ++i)
+	{
+		buffer[i] = 0;
+	}
+}
+
+void AudioManager::applyEq(float highpass, float high, float low)
+{
+	
+	//int a = 0, b = 0, c = 0; //members of your effect, data is always maintained
+
+	//for (int i = 0; i < bufferSize; ++i)
+	//{
+	//	a += (13312 / file->getSampleRate()) * (buffer[i] - a); //x256
+	//	b += (1664.00 / file->getSampleRate()) * (buffer[i] - b); //x16
+	//	c += (104.000 / file->getSampleRate()) * (buffer[i] - c); //x1
+	//	buffer[i] = highpass * (buffer[i] - a) + high * (a - b) + low * (b - c) + 1 * c; //output is given for process function too
+	//}
+}
+	

@@ -7,10 +7,12 @@
 class PlayListCtrl : public wxListView
 {
 public:
-	PlayListCtrl(wxWindow *parent);
-
+	PlayListCtrl(wxWindow *parent, wxWindowID id);
+	void addList(Playlist &list);
+	void addTrack(Node *node, long index);
+	void removeTrack(long index);
 private:
-	Playlist *mPlayList;
+	
 };
 
 

@@ -1,12 +1,14 @@
 #ifndef MUSICFILE_H
 #define MUSICFILE_H
 
+#include <iostream>
 #include <fstream>
 #include <string>
 
 using std::string;
 using std::ios;
 using std::fstream;
+using std::ios_base;
 
 struct AudioHeader
 {
@@ -49,6 +51,7 @@ struct AudioHeader
 
 		inFile.read(reinterpret_cast<char *>(&subChunk2Size), sizeof(uint32_t));
 		numSamples = subChunk2Size / ((bitsPerSample / 8) * numChannels);
+		dataPos = inFile.tellg();
 	}
 
 	uint8_t chunkID[4];
@@ -68,6 +71,8 @@ struct AudioHeader
 	char subChunk2ID[4];
 	uint32_t subChunk2Size;
 	int numSamples;
+
+	int dataPos;
 };
 
 class MusicFile
@@ -78,13 +83,22 @@ public:
 	~MusicFile();
 	void readSample(int16_t buffer[], int bufferSize);
 
-	fstream fileStream;
-	uint32_t getSampleRate()  const { return header->sampleRate; } 
-	int getNumChannels() const { return header->numChannels; }
-	uint16_t getBitsPerSample() const { return header->bitsPerSample; }
+	uint32_t getSampleRate()  const { return header.sampleRate; }
+	int getNumChannels() const { return header.numChannels; }
+	uint16_t getBitsPerSample() const { return header.bitsPerSample; }
+	long getDataSize() const { return header.subChunk2Size; }
+	int getCurrTrackTime(const long &numFrames);
+	void seek(long bytes);
+	fstream& getFileStream() { return fileStream; }
 
+	std::streampos getDataPos() { return header.dataPos; }
+	int getEndPos() { return header.dataPos + header.subChunk2Size; }
+	int getCurrPos() { return fileStream.tellg(); }
+	
 private:
-	AudioHeader *header;
+	fstream fileStream;
+	AudioHeader header;
+	
 	
 };
 

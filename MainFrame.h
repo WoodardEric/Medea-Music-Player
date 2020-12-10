@@ -9,33 +9,42 @@
 #include <wx/button.h>
 #include <wx/slider.h>
 
-#include "PlaylistPanel.h"
-#include "MiddlePanel.h"
+#include "MainPanel.h"
 #include "AudioManager.h"
 #include "MusicFile.h"
 
 #include<fstream>
+#include <string>
+#include <sstream>
+#include <vector>
 
 using std::fstream;
+using std::vector;
+
 
 // IDs for the controls and the menu commands
 enum
 {
 	// Menu event IDs
-	wxID_PLAY = 1,
-	wxID_PAUSE,
-	wxID_NEXT,
-	wxID_PREV,
-	wxID_LOOP,
-	wxID_LOOPALL,
-
-	ID_SLIDER,
+	ID_PLAY = 1,
+	ID_PAUSE,
+	ID_NEXT,
+	ID_PREV,
+	ID_LOOP,
+	ID_LOOPALL,
+	ID_STOP,
+	ID_SAVE,
+	ID_LOAD,
+	
     //    wxID_STOP,   [built-in to wxWidgets]
     //    wxID_ABOUT,  [built-in to wxWidgets]
     //    wxID_EXIT,   [built-in to wxWidgets]
         // Control event IDs
-	wxID_TIMER,
-	ID_ABOUT
+	// wxID_TIMER,
+	ID_VOL_SLIDER,
+	ID_TIME_SLIDER,
+
+	ID_SELECT
 };
 
 class MainFrame : public wxFrame
@@ -43,6 +52,7 @@ class MainFrame : public wxFrame
 public:
 	MainFrame(wxSize size);
 	virtual ~MainFrame();
+	void setCurrTrack(Node *track);
 	void OnExit(wxCommandEvent &event);
 	void OnAbout(wxCommandEvent &event);
 
@@ -55,30 +65,61 @@ public:
 	void OnLoop(wxCommandEvent &event);
 	void OnLoopList(wxCommandEvent &event);
 
+	void OnSave(wxCommandEvent &event);
+
 	void OnSlider(wxCommandEvent &event);
+	void OnTimeSlider(wxCommandEvent &event);
 
 	void OnTimer(wxTimerEvent &event);
-	void readSample();
+	void OnTimeSliderRealse(wxMouseEvent &event);
+
+	void OnKeyDown(wxKeyEvent &event);
+	void saveCurrPlaylist(string path);
+	//void OnLeftD( &event);
+
+	//void readSample();
+	void toggleLoopTrack() {trackLoop = !trackLoop;}
+	bool isTrackLoop() {return trackLoop;}
+
+	void toggleLoopList() { listLoop = !listLoop; }
+	bool isListLoop() { return listLoop; }
+
+	void readWavInfo(const string &path);
+
 private:
 	wxTimer *timer;
 
 	wxMenu *fileMenu;
 	wxMenu *controlMenu;
+	wxMenu *playListMenu;
 	wxMenu *helpMenu;
 	wxMenuBar *menuBar;
 
-	wxPanel *mainPanel;
+	MainPanel *mainPanel;
+	wxPanel *parent;
 	wxBoxSizer *hbox;
 	
-	MiddlePanel *middlePanel;
-	PlaylistPanel *rightPanel;
+	wxStatusBar *statusBar;
 	wxToolBar *toolBar;
-
+	wxSlider *timeSlider; 
 	wxSlider *volSlider;
-	MusicFile file;
+	
+	vector<Track> masterList;
+	Playlist *masterPlayList;
+	
+	MusicFile *file;
 	AudioManager *audio;
+	Node *currTrackPTR;
+
+	bool listLoop;
+	bool trackLoop;
+
+	
 	
 };
+
+
+void advanceToNextTag(fstream &inFile);
 
 #endif
 

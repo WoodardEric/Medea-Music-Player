@@ -2,27 +2,34 @@
 #define PLAYLIST_H
 
 #include <string>
-#include <vector>
 #include <fstream>
+#include <iostream>
 
-using std::ifstream;
-using std::vector;
+#include "MusicFile.h"
+
+using std::fstream;
 using std::string;
+using std::ios;
+using std::ios_base;
 
 struct Track
 {
-	string song;
-	string album;
-	string artist;
-	string genre;
-	short rating;
-	string path;
-	int timesPlayed;
+	string title = "Unkown";
+	string album = "Unkown";
+	string artist = "Unkown";
+	short year = 0000;
+	string genre = "Unkown";
+	short trackNumber = 0;
+
+	int length = 0;
+	short rating = 0;
+	string path = "";
+	int timesPlayed = 0;
 };
 
 struct Node
 {
-	Node(Track track, Node *next = nullptr, Node *prev = nullptr)
+	Node(Track *track, Node *next = nullptr, Node *prev = nullptr)
 	{
 		this->track = track;
 		this->next = next;
@@ -33,7 +40,7 @@ struct Node
 		next = nullptr;
 		prev = nullptr;
 	}
-	Track track;
+	Track *track;
 	Node *next;
 	Node *prev;
 };
@@ -41,32 +48,39 @@ struct Node
 class Playlist
 {
 
-	
-
 public:
 
-	Playlist(int size = 0);
-	~Playlist();
+	Playlist();
+	//~Playlist();
 	
-	Node* front() { return mHead; }
+	Node* front()  { return mHead; } 
+	Node* rear()  { return mTail; }	
+	int size() { return mSize; }
+	string getName() const { return mName; }
+
 	void readPlayListFile();
 	void writePlayListFile();
 
-	void addFront(Track track);
-	void addRear(Track track);
+	void addFront(Track *track);
+	void addRear(Track *track);
 
-	void insert(Node *node, Track track);
-	void remove(string song);
+	void clear();
+
+	void insert(Node *node, Track *track);
+	void insert(Node *node, long index);
+	Node* traverse(long index);
+	void remove(long index);
 	void moveTrack();
 
-	void play(string song);
-
 	string toString();
+
+	
 
 private:
 	int mSize;
 	Node *mHead;
 	Node *mTail;
+	string mName;
 	
 };
 
