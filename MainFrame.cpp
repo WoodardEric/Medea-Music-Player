@@ -3,16 +3,21 @@
 MainFrame::MainFrame(wxSize size)
 	:wxFrame(NULL, wxID_ANY, "Medea Music Player", wxDefaultPosition, size)
 {
-	
+	mLibraryPath = "Data/"; 
 	masterPlayList = new Playlist();
-	readWavInfo("Data/altan.wav");
+	
+	
+	/*readWavInfo("Data/altan.wav");
 	readWavInfo("Data/07 September.wav");
 	readWavInfo("Data/03 Minjor.wav");
 	readWavInfo("Data/01 One More Time.wav");
-
-	for (int i = 0; i <  masterList.size(); ++i)
+	readWavInfo("Data/07 Superheroes.wav");*/
+	initMasterLibrary();
+	
+	
+	for (int i = 0; i < 4; ++i)
 	{
-		masterPlayList->addFront(&masterList[i]);
+		masterPlayList->addRear(&masterLibrary[i]);
 	}
 
 	//sets icon in top corner
@@ -24,13 +29,20 @@ MainFrame::MainFrame(wxSize size)
 
 	//setup menu bar
 	fileMenu = new wxMenu;
+	libraryMenu = new wxMenu;
 	controlMenu = new wxMenu;
 	playListMenu = new wxMenu;
 	helpMenu = new wxMenu;
 	
 
+	fileMenu->Append(ID_DIR, "Set &Libarary Path", "Select directory to music library");
+	fileMenu->Append(ID_SCAN, "&Scan Library", "Scan music library for files");
 	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_EXIT, "E&xit\tAlt-X", "Exit Program");
+
+	libraryMenu->Append(ID_TITLE, "Sort by &Title", "Sort Library by song title");
+	libraryMenu->Append(ID_ALBUM, "Sort by &Album", "Sort Library by song album");
+	libraryMenu->Append(ID_ARTIST, "Sort by A&rtist", "Sort Library by song artist");
 
 	controlMenu->Append(ID_PLAY, "&Play\tCtrl-P", "Play or pause track");
 	controlMenu->Append(ID_STOP, "&Stop\tCtrl-T", "Stop current track");
@@ -47,6 +59,7 @@ MainFrame::MainFrame(wxSize size)
 	menuBar = new wxMenuBar();
 
 	menuBar->Append(fileMenu, "&File");
+	menuBar->Append(libraryMenu, "&Library");
 	menuBar->Append(controlMenu, "&Controls");
 	menuBar->Append(playListMenu, "&Playlist");
 	menuBar->Append(helpMenu, "&Help");
@@ -56,6 +69,12 @@ MainFrame::MainFrame(wxSize size)
 	wxID_EXIT);
 	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
 	wxID_ABOUT);
+
+	Bind(wxEVT_MENU, &MainFrame::OnScan, this,
+		ID_SCAN);
+	Bind(wxEVT_MENU, &MainFrame::OnDir, this,
+		ID_DIR);
+
 	Bind(wxEVT_MENU, &MainFrame::OnNext, this,
 	ID_NEXT);
 	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
@@ -64,13 +83,22 @@ MainFrame::MainFrame(wxSize size)
 	ID_LOOPALL);
 	Bind(wxEVT_MENU, &MainFrame::OnSave, this,
 		ID_SAVE);
+	Bind(wxEVT_MENU, &MainFrame::OnLoad, this,
+		ID_LOAD);
+
+	Bind(wxEVT_MENU, &MainFrame::OnTitle, this,
+		ID_TITLE);
+	Bind(wxEVT_MENU, &MainFrame::OnAlbum, this,
+		ID_ALBUM);
+	Bind(wxEVT_MENU, &MainFrame::OnArtist, this,
+		ID_ARTIST);
 
 
 	//set up wondow panels
 	parent = new wxPanel(this);
 	
-	mainPanel = new MainPanel(parent, &masterPlayList);
-	//mainPanel->setPlaylist(&masterPlayList);
+	mainPanel = new MainPanel(parent, &masterPlayList, &masterLibrary, albumIndex, artistIndex);
+	
 	hbox = new wxBoxSizer(wxHORIZONTAL);
 	hbox->Add(mainPanel, 1, wxEXPAND | wxALL, 5);
 	parent->SetSizer(hbox);
@@ -83,7 +111,8 @@ MainFrame::MainFrame(wxSize size)
 
 
 	toolBar = new wxToolBar(this, wxID_ANY,
-	wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxNO_BORDER | wxTB_BOTTOM);
+	wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxNO_BORDER |  wxTB_BOTTOM);
+	
 	wxInitAllImageHandlers();
 	volSlider = new wxSlider(toolBar, ID_VOL_SLIDER, 100, 0, 100,
 	wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL);
@@ -106,7 +135,9 @@ MainFrame::MainFrame(wxSize size)
 	timeSlider->SetTickFreq(audio->getFramesPerBuffer());
 	toolBar->AddControl(timeSlider);
 	toolBar->Realize();
+	
 	SetToolBar(toolBar);
+	toolBar->SetMargins(200, 200);
 
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
@@ -207,13 +238,53 @@ void MainFrame::OnExit(wxCommandEvent &WXUNUSED(event))
 	timer->Stop();
 	Close(true);
 }
+void MainFrame::OnDir(wxCommandEvent &WXUNUSED(event))
+{
+	wxString def = wxT("/");
+	wxDirDialog dir(this, wxT("Select Library Loction"), def);
+	if (dir.ShowModal() == wxID_OK)
+	{
+		mLibraryPath = dir.GetPath() + '/';
+		wxMessageBox(mLibraryPath);
+	}
+}
+void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
+{
+	wxDir dir(mLibraryPath);
+	if (!dir.IsOpened())
+	{
+		wxMessageBox(wxT("Sorry, could not open directory."));
+
+	}
+	wxString fileName;
+	wxString fileType = "*.wav*";
+
+	bool cont = dir.GetFirst(&fileName, fileType, wxDIR_FILES | wxDIR_DIRS);
+	while (cont)
+	{
+		string file = string(fileName.mb_str());
+		readWavInfo(mLibraryPath + file);
+		cont = dir.GetNext(&fileName);
+	}
+}
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
-	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\n A simple audio player");
+	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player");
 	wxMessageBox(message);
 }
-
+void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
+{
+	mainPanel->recreateList(00);
+}
+void MainFrame::OnAlbum(wxCommandEvent &WXUNUSED(event))
+{
+	mainPanel->recreateList(10);
+}
+void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
+{
+	mainPanel->recreateList(20);
+}
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
 	if (!audio->isStreaming())
@@ -277,6 +348,10 @@ void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
 	saveCurrPlaylist("Data/");
 }
+void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
+{
+	loadCurrPlayList("Data/");
+}
 void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->setVolume(volSlider->GetValue() / 100.0f);
@@ -309,18 +384,71 @@ void MainFrame::saveCurrPlaylist(string path)
 
 	while (ptr->next != nullptr)
 	{
-		outFile << ptr->track->title << ',' << ptr->track->path << '\n';
+		outFile << ptr->track->title << ',' << ptr->track->album << ','
+			<< ptr->track->artist << ',' << ptr->track->year << ','
+			<< ptr->track->genre << ',' << ptr->track->trackNumber << ','
+			<< ptr->track->length << ',' << ptr->track->rating << ','
+			<< ptr->track->timesPlayed << ',' << ptr->track->path << '\n';
 		ptr = ptr->next;
 	}
 	
-	outFile << ptr->track->title << ',' << ptr->track->path;
+	outFile << ptr->track->title << ',' << ptr->track->album << ','
+		<< ptr->track->artist << ',' << ptr->track->year << ','
+		<< ptr->track->genre << ',' << ptr->track->trackNumber << ','
+		<< ptr->track->length << ',' << ptr->track->rating << ','
+		<< ptr->track->timesPlayed << ',' << ptr->track->path;
 }
 
+void MainFrame::loadCurrPlayList(string path)
+{
+	mainPanel->clearPlaylist();
+	ifstream inFile(path + mainPanel->getListName());
+	if (!inFile)
+	{
+		wxMessageBox(wxT("Sorry, could not open playlist."));
+		return;
+	}
+	masterPlayList->clear();
+
+	while (!inFile.eof())
+	{
+		Track track;
+		char del;
+		getline(inFile, track.title, ',');
+		getline(inFile, track.album, ',');
+		getline(inFile, track.artist, ',');
+		inFile >> track.year;
+		inFile >> del;
+		getline(inFile, track.genre, ',');
+		inFile >> track.trackNumber;
+		inFile >> del;
+		inFile >> track.length;
+		inFile >> del;
+		inFile >> track.rating;
+		inFile >> del;
+		inFile >> track.timesPlayed;
+		inFile >> del;
+		getline(inFile, track.path);
+		
+		masterPlayList->addRear(&masterLibrary[searchByTitle(masterLibrary, track.title)]);
+	
+	}
+
+	mainPanel->setPlaylist(&masterPlayList);
+	Node *ptr = masterPlayList->front();
+	setCurrTrack(ptr);
+
+}
 void MainFrame::readWavInfo(const string &path)
 {
 	Track track;
 	track.path = path;
 	fstream inFile(path, ios::in | ios::binary);
+	if (!inFile)
+	{
+		wxMessageBox(wxT("Sorry, could not open wave file."));
+		return;
+	}
 	AudioHeader header(inFile);
 	track.length = header.subChunk2Size / (header.sampleRate * header.numChannels * header.bitsPerSample / 8);
 	inFile.seekg(header.subChunk2Size, ios_base::cur);
@@ -356,6 +484,10 @@ void MainFrame::readWavInfo(const string &path)
 		if (strncmp(ID, INAM, 4) == 0)
 		{
 			getline(inFile, track.title, '\0');
+			if (track.title[0] == '0' || track.title[0] == '1')
+			{
+				track.title.erase(0, 3);
+			}
 		}
 		else if (strncmp(ID, IPRD, 4) == 0)
 		{
@@ -387,9 +519,71 @@ void MainFrame::readWavInfo(const string &path)
 	}
 
 	inFile.close();
-	masterList.push_back(track);
+	masterLibrary.push_back(track);
 }
+void MainFrame::saveMasterList()
+{
+	fstream outFile("Data/masterList.csv", ios::out);
+	if (!outFile)
+	{
+		wxMessageBox(wxT("Sorry, could not open wave file."));
+		return;
+	}
+	for (int i = 0; i < masterLibrary.size(); ++i)
+	{
+		outFile << masterLibrary[i].title << ',' << masterLibrary[i].album << ','
+			<< masterLibrary[i].artist << ',' << masterLibrary[i].year << ','
+			<< masterLibrary[i].genre << ',' << masterLibrary[i].trackNumber << ','
+			<< masterLibrary[i].length << ',' << masterLibrary[i].rating << ','
+			<< masterLibrary[i].timesPlayed << ',' << masterLibrary[i].path;
 
+		if (i != masterLibrary.size() - 1)
+		{
+			outFile << '\n';
+		}
+	}
+	
+	outFile.close();
+	
+}
+void MainFrame::initMasterLibrary()
+{
+	fstream inFile("Data/masterList.csv", ios::in);
+	if (!inFile)
+	{
+		wxMessageBox(wxT("Sorry, could not open master library."));
+		return;
+	}
+	
+	while (!inFile.eof())
+	{
+		Track track;
+		char del;
+		getline(inFile, track.title, ',');
+		getline(inFile, track.album, ',');
+		getline(inFile, track.artist, ',');
+		inFile >> track.year;
+		inFile >> del;
+		getline(inFile, track.genre, ',');
+		inFile >> track.trackNumber;
+		inFile >> del;
+		inFile >> track.length;
+		inFile >> del;
+		inFile >> track.rating;
+		inFile >> del;
+		inFile >> track.timesPlayed;
+		inFile >> del;
+		getline(inFile, track.path);
+
+   		masterLibrary.push_back(track);
+	}
+
+	attachIndexToVector(albumIndex, masterLibrary);
+	attachIndexToVector(artistIndex, masterLibrary);
+	sortByTitle(masterLibrary);
+	sortByArtist(artistIndex);
+	sortByAlbum(albumIndex);
+}
 void advanceToNextTag(fstream &inFile)
 {
 	char delem;
@@ -398,3 +592,4 @@ void advanceToNextTag(fstream &inFile)
 		inFile.get(delem);
 	}
 }
+

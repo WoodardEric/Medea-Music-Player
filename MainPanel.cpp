@@ -1,81 +1,146 @@
 #include "MainPanel.h"
 #include "MainFrame.h"
 
-MainPanel::MainPanel(wxPanel *parent, Playlist **list) : wxPanel(parent, wxID_ANY)
+MainPanel::MainPanel(wxPanel *parent, Playlist **list, 
+	vector<Track> *vec, vector<Track *> &albumIndex, vector<Track *> &artistIndex)
+	: wxPanel(parent, wxID_ANY), mLibrary(*vec), mAlbumIndex(albumIndex), mArtistIndex(artistIndex)
 {
 	mParent = parent;
-	mPlaylist = *list;
 	mPTRMove = nullptr;
 	mFirstIndex = -1;
-	wxBoxSizer *const sizer = new wxBoxSizer(wxVERTICAL);
-	mPlaylistCtrl = new PlayListCtrl(this, ID_LIST);
-	mPlaylistCtrl->addList(*mPlaylist);
+	sortByTitle = true;
+	sortByArtist = false;
+	sortByAlbum = false;
+	
+	wxBoxSizer *const sizer = new wxBoxSizer(wxHORIZONTAL);
+	mPlaylistCtrl = new PlayListCtrl(this, ID_LIST, list);
+	
+	mLibraryCtrl = new LibraryCtrl(this, ID_LIBRARY);
+	mLibraryCtrl->addList(mLibrary);
+	sizer->Add(mLibraryCtrl, wxSizerFlags(2).Expand().Border());
 	sizer->Add(mPlaylistCtrl, wxSizerFlags(2).Expand().Border());
 	SetSizer(sizer);
+	
 	Bind(wxEVT_LIST_ITEM_ACTIVATED, &MainPanel::OnAtivate, this, ID_LIST);
-	Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &MainPanel::OnRightClick, this, ID_LIST);
+	Bind(wxEVT_LIST_ITEM_ACTIVATED, &MainPanel::OnLibraryAtivate, this, ID_LIBRARY);
+	Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &MainPanel::OnLibraryRightClick, this, ID_LIBRARY);
 }
 void MainPanel::setPlaylist(Playlist **list)
 {
-	mPlaylist = *list;
+	mPlaylistCtrl->setPlaylist(list);
 }
+void MainPanel::loadPlayListFromFile(string path)
+{
+	
+}
+void MainPanel::clearPlaylist()
+{
+	mPlaylistCtrl->DeleteAllItems();
+	mPlaylistCtrl->clearPlayList();
+}
+void MainPanel::recreateList(short flags)
+{
+	mLibraryCtrl->DeleteAllItems();
+	mLibraryCtrl->Hide();
+	if (flags == 00)
+	{
+		mLibraryCtrl->addList(mLibrary);
+		toggleByArtist();
+	}
+	else if (flags == 10)
+	{
+		mLibraryCtrl->addList(mAlbumIndex);
+		toggleByAlbum();
+	}
+	else if (flags == 20)
+	{
+		mLibraryCtrl->addList(mArtistIndex);
+		toggleByArtist();
+	}
+	/*else if (flags == 01)
+	{
 
+	}
+	else if (flags == 11)
+	{
+
+	}
+	else if (flags == 21)
+	{
+
+	}*/
+	mLibraryCtrl->Show();
+}
+void MainPanel::clearLibraryCtrl()
+{
+	mLibraryCtrl->ClearAll();
+}
 void MainPanel::OnAtivate(wxListEvent &event)
 {
 	MainFrame *frame = (MainFrame *)mParent->GetParent();
-	Node *ptr = mPlaylist->front();
-	ptr = mPlaylist->traverse(mPlaylistCtrl->GetFirstSelected());
+	Node *ptr = getFront();
+	ptr = mPlaylistCtrl->traverse(mPlaylistCtrl->GetFirstSelected());
 	frame->setCurrTrack(ptr);
 }
 
-void MainPanel::OnRightClick(wxListEvent &event)
+void MainPanel::OnLibraryAtivate(wxListEvent &event)
+{	
+	sendActivated(mLibraryCtrl->GetFirstSelected());
+}
+
+void MainPanel::OnLibraryRightClick(wxListEvent &event)
 {
 	void *data = reinterpret_cast<void *>(event.GetItem().GetData());
 	wxMenu mnu;
 	mnu.SetClientData(data);
-	mnu.Append(ID_PICK, "Select");
-	mnu.Append(ID_MOVE, "Move Selected");
-	mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainPanel::OnPopupClick), NULL, this);
+	mnu.Append(ID_QUEUE, "Queue to play list");
+	mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainPanel::OnLibraruPopupClick), NULL, this);
 	PopupMenu(&mnu);
 }
-
-void MainPanel::OnPopupClick(wxCommandEvent &event)
+void MainPanel::OnLibraruPopupClick(wxCommandEvent &event)
 {
-	
 	switch (event.GetId())
 	{
-	case ID_PICK:
-		//mPTRMove = mPlaylist->front();
-		mFirstIndex = mPlaylistCtrl->GetFirstSelected();
-		mPTRMove = mPlaylist->traverse(mFirstIndex);
+	case ID_QUEUE:
+		sendActivated(mLibraryCtrl->GetFirstSelected());
 		break;
-	case ID_MOVE:
-		if (mPTRMove == nullptr)
-			return;
-
-		mPlaylistCtrl->removeTrack(mFirstIndex);
-		int offset = 0;
-		int index = mPlaylistCtrl->GetFirstSelected();
-		if (mFirstIndex <= index)
-		{
-			offset = 1;
-		}
-		mPlaylist->insert(mPTRMove, mPlaylistCtrl->GetFirstSelected() + offset);
-		mPlaylistCtrl->addTrack(mPTRMove, mPlaylistCtrl->GetFirstSelected() + 1);
-
-		mPTRMove = nullptr;
-		mFirstIndex = -1;
-			break;
+	default:
+		event.Skip();
+		break;
 	}
 }
 
-void MainPanel::clearPlaylist()
-{
-	mPlaylist->clear();
-}
 
 Node *findNode(long i)
 {
 	return nullptr;
+}
+
+void MainPanel::toggleByTitle()
+{
+	sortByTitle = true;
+	sortByAlbum = false;
+	sortByArtist = false;
+}
+void MainPanel::toggleByArtist()
+{
+	sortByTitle = false;
+	sortByAlbum = false;
+	sortByArtist = true;
+}
+void MainPanel::toggleByAlbum()
+{
+	sortByTitle = false;
+	sortByAlbum = true;
+	sortByArtist = false;
+}
+void MainPanel::sendActivated(long index)
+{
+	if (sortByTitle)
+		mPlaylistCtrl->appendTrack(&mLibrary[index]);
+	else if (sortByAlbum)
+		mPlaylistCtrl->appendTrack(mAlbumIndex[index]);
+	else if (sortByArtist)
+		mPlaylistCtrl->appendTrack(mArtistIndex[index]);
 }
 

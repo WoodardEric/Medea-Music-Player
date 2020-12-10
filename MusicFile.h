@@ -99,7 +99,6 @@ private:
 	fstream fileStream;
 	AudioHeader header;
 	
-	
 };
 
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include "MusicFile.h"
 
@@ -23,8 +24,8 @@ struct Track
 
 	int length = 0;
 	short rating = 0;
-	string path = "";
 	int timesPlayed = 0;
+	string path = "";
 };
 
 struct Node
@@ -67,14 +68,12 @@ public:
 	void clear();
 
 	void insert(Node *node, Track *track);
-	void insert(Node *node, long index);
+	void move(Node *node, long index);
 	Node* traverse(long index);
 	void remove(long index);
 	void moveTrack();
 
 	string toString();
-
-	
 
 private:
 	int mSize;

@@ -82,13 +82,13 @@ void Playlist::clear()
     mTail = nullptr;
     mSize = 0;
 }
-void Playlist::insert(Node* node, Track *track)
-{
-    Node* newNode = new Node(track, node->next, node);
-    node->next = newNode;
-    newNode->next->prev = newNode;
-}
-void Playlist::insert(Node *node, long index)
+//void Playlist::insert(Node* node, Track *track)
+//{
+//    Node* newNode = new Node(track, node->next, node);
+//    node->next = newNode;
+//    newNode->next->prev = newNode;
+//}
+void Playlist::move(Node *node, long index)
 {
     Node *ptr = traverse(index);
    
@@ -132,15 +132,16 @@ void Playlist::insert(Node *node, long index)
         mTail->next = nullptr;
     }
 }
+
 void Playlist::remove(long index)
 {
     Node *ptr = traverse(index);
-    if (ptr = mHead)
+    if (ptr == mHead)
     {
         mHead = ptr->next;
         mHead->prev = nullptr;
     }
-    else if(ptr = mTail)
+    else if(ptr == mTail)
     {
         mTail = ptr->prev;
         mTail->next = nullptr;
@@ -153,11 +154,8 @@ void Playlist::remove(long index)
     delete ptr;
 }
 
-void Playlist::moveTrack()
-{
 
-}
-Node*  Playlist::traverse(long index)
+Node* Playlist::traverse(long index)
 {
     Node *node = mHead;
     for (int i = 0; i < index; ++i)
@@ -166,6 +164,7 @@ Node*  Playlist::traverse(long index)
     }
     return node;
 }
+
 string Playlist::toString()
 {
     return string();

@@ -3,6 +3,7 @@
 
 #include "portaudio.h"
 #include <wx/wx.h>
+#include <wx/dir.h>
 #ifndef wxHAS_IMAGES_IN_RESOURCES
 #include "icons.xpm"
 #endif
@@ -12,6 +13,8 @@
 #include "MainPanel.h"
 #include "AudioManager.h"
 #include "MusicFile.h"
+#include "IDs.h"
+#include "index.h"
 
 #include<fstream>
 #include <string>
@@ -21,32 +24,6 @@
 using std::fstream;
 using std::vector;
 
-
-// IDs for the controls and the menu commands
-enum
-{
-	// Menu event IDs
-	ID_PLAY = 1,
-	ID_PAUSE,
-	ID_NEXT,
-	ID_PREV,
-	ID_LOOP,
-	ID_LOOPALL,
-	ID_STOP,
-	ID_SAVE,
-	ID_LOAD,
-	
-    //    wxID_STOP,   [built-in to wxWidgets]
-    //    wxID_ABOUT,  [built-in to wxWidgets]
-    //    wxID_EXIT,   [built-in to wxWidgets]
-        // Control event IDs
-	// wxID_TIMER,
-	ID_VOL_SLIDER,
-	ID_TIME_SLIDER,
-
-	ID_SELECT
-};
-
 class MainFrame : public wxFrame
 {
 public:
@@ -54,7 +31,14 @@ public:
 	virtual ~MainFrame();
 	void setCurrTrack(Node *track);
 	void OnExit(wxCommandEvent &event);
+	void OnDir(wxCommandEvent &event);
+
+	void OnScan(wxCommandEvent &event);
 	void OnAbout(wxCommandEvent &event);
+	
+	void OnTitle(wxCommandEvent &event);
+	void OnAlbum(wxCommandEvent &event);
+	void OnArtist(wxCommandEvent &event);
 
 	void OnPlay(wxCommandEvent &event);
 	void OnPause(wxCommandEvent &event);
@@ -66,6 +50,7 @@ public:
 	void OnLoopList(wxCommandEvent &event);
 
 	void OnSave(wxCommandEvent &event);
+	void OnLoad(wxCommandEvent &event);
 
 	void OnSlider(wxCommandEvent &event);
 	void OnTimeSlider(wxCommandEvent &event);
@@ -75,6 +60,7 @@ public:
 
 	void OnKeyDown(wxKeyEvent &event);
 	void saveCurrPlaylist(string path);
+	void loadCurrPlayList (string path);
 	//void OnLeftD( &event);
 
 	//void readSample();
@@ -85,11 +71,13 @@ public:
 	bool isListLoop() { return listLoop; }
 
 	void readWavInfo(const string &path);
-
+	void initMasterLibrary();
+	void saveMasterList();
 private:
 	wxTimer *timer;
 
 	wxMenu *fileMenu;
+	wxMenu *libraryMenu;
 	wxMenu *controlMenu;
 	wxMenu *playListMenu;
 	wxMenu *helpMenu;
@@ -104,7 +92,10 @@ private:
 	wxSlider *timeSlider; 
 	wxSlider *volSlider;
 	
-	vector<Track> masterList;
+	vector<Track> masterLibrary;
+	vector<Track*> albumIndex;
+	vector<Track*> artistIndex;
+	
 	Playlist *masterPlayList;
 	
 	MusicFile *file;
@@ -113,9 +104,8 @@ private:
 
 	bool listLoop;
 	bool trackLoop;
-
 	
-	
+	string mLibraryPath;
 };
 
 

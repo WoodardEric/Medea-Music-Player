@@ -41,6 +41,12 @@
     <ClCompile Include="MainPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LibraryCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Index.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -64,6 +70,15 @@
     <ClInclude Include="MainPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LibraryCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IDs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="index.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icons.rc">
@@ -71,7 +86,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Data\03 Digital Love.wav">
+    <Media Include="Data\02 Bent Nails.wav">
       <Filter>Resource Files</Filter>
     </Media>
   </ItemGroup>

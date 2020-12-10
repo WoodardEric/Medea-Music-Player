@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="Index.cpp" />
+    <ClCompile Include="LibraryCtrl.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="MusicFile.cpp" />
@@ -28,6 +30,9 @@
     <ClCompile Include="MainPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IDs.h" />
+    <ClInclude Include="index.h" />
+    <ClInclude Include="LibraryCtrl.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="MusicFile.h" />
@@ -40,7 +45,7 @@
     <ResourceCompile Include="icons.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Data\03 Digital Love.wav" />
+    <Media Include="Data\02 Bent Nails.wav" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
