@@ -5,15 +5,7 @@ MainFrame::MainFrame(wxSize size)
 {
 	mLibraryPath = "Data/"; 
 	masterPlayList = new Playlist();
-	
-	
-	/*readWavInfo("Data/altan.wav");
-	readWavInfo("Data/07 September.wav");
-	readWavInfo("Data/03 Minjor.wav");
-	readWavInfo("Data/01 One More Time.wav");
-	readWavInfo("Data/07 Superheroes.wav");*/
 	initMasterLibrary();
-	
 	
 	for (int i = 0; i < 4; ++i)
 	{
@@ -150,8 +142,6 @@ MainFrame::MainFrame(wxSize size)
 	ID_PREV);
 	//Bind(wxKeyEvent, &MainFrame::OnChar, this, ID_SELECT);
 	
-	//mainPanel->Bind(wxEVT_CHAR_HOOK, &MainFrame::OnKeyDown, this);
-	//mainPanel->Bind(wxEVT_LEFT_DCLICK, &MainFrame::OnLeftD, this);
 	audio->openStream();
 	timer = new wxTimer(this, 1);
 	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
@@ -213,7 +203,6 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 			audio->buffer[i] *= audio->getVolume();
 		}
 		
-
 		audio->err = Pa_WriteStream(audio->audioStream, audio->buffer, audio->getFramesPerBuffer());
 		audio->increaseCounter();
 		
@@ -270,7 +259,7 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
-	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player");
+	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player\nThanks to icon king1 for the icons!\nFrom: https://freeicons.io/icon-list/material-icons-alert-and-av?page=1 \nLibrarys used\nAudio Streaming: Portaudio\nGUI: wxWidgets\n");
 	wxMessageBox(message);
 }
 void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
@@ -401,8 +390,16 @@ void MainFrame::saveCurrPlaylist(string path)
 
 void MainFrame::loadCurrPlayList(string path)
 {
+	wxFileDialog dialog(this);
+
+	if (!dialog.ShowModal() == wxID_OK)
+	{
+		//error
+	}
+	wxString str = dialog.GetPath();
+	string fileName = string(str.mb_str());
 	mainPanel->clearPlaylist();
-	ifstream inFile(path + mainPanel->getListName());
+	ifstream inFile(fileName);
 	if (!inFile)
 	{
 		wxMessageBox(wxT("Sorry, could not open playlist."));
