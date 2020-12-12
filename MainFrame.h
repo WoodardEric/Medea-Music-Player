@@ -27,7 +27,10 @@ using std::vector;
 class MainFrame : public wxFrame
 {
 public:
-	MainFrame(wxSize size);
+	MainFrame(wxSize size, 
+		 vector<Track> &masterVec, 
+		 vector<Track*> &albumIndex, 
+		 vector<Track*> &artistIndex);
 	virtual ~MainFrame();
 	void setCurrTrack(Node *track);
 	void OnExit(wxCommandEvent &event);
@@ -71,7 +74,7 @@ public:
 	bool isListLoop() { return listLoop; }
 
 	void readWavInfo(const string &path);
-	void initMasterLibrary();
+	
 	void saveMasterList();
 private:
 	wxTimer *timer;
@@ -83,8 +86,8 @@ private:
 	wxMenu *helpMenu;
 	wxMenuBar *menuBar;
 
-	MainPanel *mainPanel;
-	wxPanel *parent;
+	MainPanel *mPanel;
+	wxPanel *mParent;
 	wxBoxSizer *hbox;
 	
 	wxStatusBar *statusBar;
@@ -92,9 +95,9 @@ private:
 	wxSlider *timeSlider; 
 	wxSlider *volSlider;
 	
-	vector<Track> masterLibrary;
-	vector<Track*> albumIndex;
-	vector<Track*> artistIndex;
+	vector<Track> *mLibrary;
+	vector<Track*> *mAlbumIndex;
+	vector<Track*> *mArtistIndex;
 	
 	Playlist *masterPlayList;
 	

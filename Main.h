@@ -1,3 +1,17 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  Main.h
+
+ @brief:
+
+ Main.h initilizes program data and sets up the main window. 
+ This is were the program would read any int file if implemented.
+
+ @author Eric Woodard
+ @date   12/11/2020
+ **********************************************************************/
+
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -13,12 +27,20 @@
 #   include <wx/wx.h>
 #endif
 
+#include "index.h"
 #include "MainFrame.h"
+
+#include <vector>
 
 class MedeaApp : public wxApp
 {
 public:
+	void initMasterLibrary();
 	bool OnInit();
+	vector<Track> masterLibrary;
+	vector<Track *> mAlbumIndex;
+	vector<Track *> mArtistIndex;
+
 };
 
 #endif
