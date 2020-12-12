@@ -32,6 +32,10 @@ public:
 		 vector<Track*> &albumIndex, 
 		 vector<Track*> &artistIndex);
 	virtual ~MainFrame();
+
+	void initMenu();
+	void initToolBar();
+
 	void setCurrTrack(Node *track);
 	void OnExit(wxCommandEvent &event);
 	void OnDir(wxCommandEvent &event);
@@ -101,7 +105,7 @@ private:
 	
 	Playlist *masterPlayList;
 	
-	MusicFile *file;
+	MusicFile *mFile;
 	AudioManager *audio;
 	Node *currTrackPTR;
 

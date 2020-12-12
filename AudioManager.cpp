@@ -1,22 +1,20 @@
 #include "AudioManager.h"
 
-AudioManager::AudioManager(MusicFile *file) : file(file)
+AudioManager::AudioManager() 
 {
+	short numChannels = 2;
 	mFrameCounter = 0;
 	framesPerBuffer = 1024;
 	err = Pa_Initialize();
 	parameters.device = Pa_GetDefaultOutputDevice();
 	deviceInfo = Pa_GetDeviceInfo(parameters.device);
 	mVolume = 1.0f;
-	
+		
 	parameters.suggestedLatency = deviceInfo->defaultHighOutputLatency;
 	parameters.hostApiSpecificStreamInfo = NULL;
 
-	//int numBytes = framesPerBuffer * header->numChannels * header->bitsPerSample;
-
-	bufferSize = (framesPerBuffer * file->getNumChannels());
-	buffer = new int16_t[bufferSize];
-	
+	bufferSize = (framesPerBuffer * numChannels);
+	buffer = new int16_t[bufferSize];	
 }
 
 AudioManager::~AudioManager()
@@ -24,18 +22,19 @@ AudioManager::~AudioManager()
 	err = Pa_Terminate();
 }
 
-void AudioManager::openStream()
+void AudioManager::openStream(const int numChannels, const int bitsPerSample, const int sampleRate)
 {
-	setParameters(file->getNumChannels(), file->getBitsPerSample());
+	setParameters(numChannels, bitsPerSample);
+
 	err = Pa_OpenStream(
 		&audioStream,
 		0,
 		&parameters,
-		file->getSampleRate(),
+		sampleRate,
 		framesPerBuffer,
 		paClipOff,
-		NULL, /* no callback, use blocking API */
-		NULL); /* no callback, so no callback userData */
+		NULL, //no callback, use blocking API 
+		NULL); //no callback, so no callback userData 
 }
 
 void AudioManager::startStream()

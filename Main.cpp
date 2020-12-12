@@ -19,9 +19,11 @@ IMPLEMENT_APP(MedeaApp);
 bool MedeaApp::OnInit()
 {
 	initMasterLibrary();
+		
     MainFrame *main = new MainFrame(wxSize(1200, 600), masterLibrary, mAlbumIndex, mArtistIndex);
     main->Show(true);
     SetTopWindow(main);
+
     return true;
 }
 

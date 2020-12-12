@@ -8,9 +8,9 @@
 class AudioManager
 {
 public:
-	AudioManager(MusicFile *file);
+	AudioManager();
 	~AudioManager();
-	void openStream();
+	void openStream(const int numChannels, const int bitsPerSample, const int sampleRate);
 	void startStream();
 	void stopStream();
 	void closeStream();
@@ -32,19 +32,21 @@ public:
 	void setParameters(int numChannels, int bitsPerSample);
 	void applyEq(float highpass, float high, float low);
 	void clearBuffer();
-
-	PaStream *audioStream;
+	
+	
 	int16_t *buffer;
 	PaError err;
-	
+	PaStream *audioStream;
+
 private:
+	
 	PaStreamParameters parameters;
 	const PaDeviceInfo *deviceInfo;
 	int framesPerBuffer;
 	int bufferSize;
 	float mVolume;
 	long mFrameCounter;
-	const MusicFile *file;
+	
 	
 };
 

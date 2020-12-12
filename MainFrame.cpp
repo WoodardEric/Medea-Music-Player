@@ -11,27 +11,58 @@ MainFrame::MainFrame(wxSize size,
 	mArtistIndex = &artistIndex;
 	mLibraryPath = "Data/"; 
 	masterPlayList = new Playlist();
-	//initMasterLibrary();
+
+	//for (int i = 0; i < 4; ++i)
+	//{
+	//	masterPlayList->addRear(&(*mLibrary)[i]);
+	//}
 	
-	for (int i = 0; i < 4; ++i)
-	{
-		masterPlayList->addRear(&(*mLibrary)[i]);
-	}
-	
+	//currTrackPTR = masterPlayList->front();
+	//file = new MusicFile(currTrackPTR->track->path);
+	mFile = nullptr;
+	//mFile = new MusicFile();
+	audio = new AudioManager();
+
 	//sets icon in top corner
-	currTrackPTR = masterPlayList->front();
-	file = new MusicFile(currTrackPTR->track->path);
-	audio = new AudioManager(file);
-
 	SetIcon(wxICON(icon));
+	
+	initMenu();
+	
+	mParent = new wxPanel(this);
+	mPanel = new MainPanel(mParent, &masterPlayList, mLibrary, *mAlbumIndex, *mArtistIndex);
+	
+	hbox = new wxBoxSizer(wxHORIZONTAL);
+	hbox->Add(mPanel, 1, wxEXPAND | wxALL, 5);
+	mParent->SetSizer(hbox);
 
-	//setup menu bar
+	initToolBar();
+
+	statusBar = new wxStatusBar(this, wxID_ANY);
+	SetStatusBar(statusBar);
+	statusBar->SetFieldsCount(3);
+	statusBar->SetStatusText(wxT("Ready"), 0);
+
+	//audio->openStream();
+
+	timer = new wxTimer(this, 1);
+	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
+	timer->Start(1);
+}
+
+/*It is important to stop the timer otherwise wxWidgets throws an exception*/
+MainFrame::~MainFrame()
+{
+	timer->Stop();
+}
+
+/*initializes menu items and events*/
+void MainFrame::initMenu()
+{
 	fileMenu = new wxMenu;
 	libraryMenu = new wxMenu;
 	controlMenu = new wxMenu;
 	playListMenu = new wxMenu;
 	helpMenu = new wxMenu;
-	
 
 	fileMenu->Append(ID_DIR, "Set &Libarary Path", "Select directory to music library");
 	fileMenu->Append(ID_SCAN, "&Scan Library", "Scan music library for files");
@@ -54,6 +85,7 @@ MainFrame::MainFrame(wxSize size,
 	playListMenu->Append(ID_LOAD, "Loa&d\tCtrl-D", "Load a playlist");
 
 	helpMenu->Append(wxID_ABOUT, "&About\tCtrl-A", "About dialogue");
+
 	menuBar = new wxMenuBar();
 
 	menuBar->Append(fileMenu, "&File");
@@ -63,26 +95,15 @@ MainFrame::MainFrame(wxSize size,
 	menuBar->Append(helpMenu, "&Help");
 	SetMenuBar(menuBar);
 
-	Bind(wxEVT_MENU, &MainFrame::OnExit, this,
-	wxID_EXIT);
-	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
-	wxID_ABOUT);
-
-	Bind(wxEVT_MENU, &MainFrame::OnScan, this,
-		ID_SCAN);
+	//bind all menu events
+	
+	
 	Bind(wxEVT_MENU, &MainFrame::OnDir, this,
 		ID_DIR);
-
-	Bind(wxEVT_MENU, &MainFrame::OnNext, this,
-	ID_NEXT);
-	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
-	ID_PREV);
-	Bind(wxEVT_MENU, &MainFrame::OnLoopList, this,
-	ID_LOOPALL);
-	Bind(wxEVT_MENU, &MainFrame::OnSave, this,
-		ID_SAVE);
-	Bind(wxEVT_MENU, &MainFrame::OnLoad, this,
-		ID_LOAD);
+	Bind(wxEVT_MENU, &MainFrame::OnScan, this,
+		ID_SCAN);
+	Bind(wxEVT_MENU, &MainFrame::OnExit, this,
+		wxID_EXIT);
 
 	Bind(wxEVT_MENU, &MainFrame::OnTitle, this,
 		ID_TITLE);
@@ -91,32 +112,35 @@ MainFrame::MainFrame(wxSize size,
 	Bind(wxEVT_MENU, &MainFrame::OnArtist, this,
 		ID_ARTIST);
 
+	Bind(wxEVT_MENU, &MainFrame::OnNext, this,
+		ID_NEXT);
+	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
+		ID_PREV);
+	Bind(wxEVT_MENU, &MainFrame::OnLoopList, this,
+		ID_LOOPALL);
 
-	//set up wondow panels
-	mParent = new wxPanel(this);
-	
-	mPanel = new MainPanel(mParent, &masterPlayList, mLibrary, *mAlbumIndex, *mArtistIndex);
-	
-	hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(mPanel, 1, wxEXPAND | wxALL, 5);
-	mParent->SetSizer(hbox);
+	Bind(wxEVT_MENU, &MainFrame::OnSave, this,
+		ID_SAVE);
+	Bind(wxEVT_MENU, &MainFrame::OnLoad, this,
+		ID_LOAD);
 
+	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
+		wxID_ABOUT);
+}
 
-	statusBar = new wxStatusBar(this, wxID_ANY);
-	SetStatusBar(statusBar);
-	statusBar->SetFieldsCount(3);
-	statusBar->SetStatusText(wxT("Ready"), 0);
-
-
+/*setups up the tool bar*/
+void MainFrame::initToolBar()
+{
 	toolBar = new wxToolBar(this, wxID_ANY,
-	wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxNO_BORDER |  wxTB_BOTTOM);
-	
-	wxInitAllImageHandlers();
-	volSlider = new wxSlider(toolBar, ID_VOL_SLIDER, 100, 0, 100,
-	wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL);
+		wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxNO_BORDER | wxTB_BOTTOM);
 
+	volSlider = new wxSlider(toolBar, ID_VOL_SLIDER, 100, 0, 100,
+		wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL);
 
 	toolBar->AddControl(volSlider);
+
+	//load icons for toolbar
+	wxInitAllImageHandlers();
 	wxBitmap bmpPlay(wxT("Resources/play.png"), wxBITMAP_TYPE_PNG);
 	if (!bmpPlay.Ok()) { wxMessageBox(wxT("Sorry, could not load file.")); }
 	wxBitmap bmpPrev(wxT("Resources/prev.png"), wxBITMAP_TYPE_PNG);
@@ -127,56 +151,47 @@ MainFrame::MainFrame(wxSize size,
 	toolBar->AddTool(ID_PREV, wxT("prev"), bmpPrev, "play previous");
 	toolBar->AddTool(ID_PLAY, wxT("Play"), bmpPlay, "start/stop track");
 	toolBar->AddTool(ID_NEXT, wxT("next"), bmpNext, "play next");
-	
-	timeSlider = new wxSlider(toolBar, ID_TIME_SLIDER, 0, 0, file->getDataSize(),
-	wxDefaultPosition, wxSize(200, -1), wxSL_HORIZONTAL);
+
+	timeSlider = new wxSlider(toolBar, ID_TIME_SLIDER, 0, 0, 10,
+		wxDefaultPosition, wxSize(200, -1), wxSL_HORIZONTAL);
+
 	timeSlider->SetTickFreq(audio->getFramesPerBuffer());
+
 	toolBar->AddControl(timeSlider);
 	toolBar->Realize();
-	
-	SetToolBar(toolBar);
-	toolBar->SetMargins(200, 200);
 
+	SetToolBar(toolBar);
+
+	//Bind all tool bar events
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
-	
+
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPlay, this,
-	ID_PLAY);
+		ID_PLAY);
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnNext, this,
-	ID_NEXT);
+		ID_NEXT);
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPrev, this,
-	ID_PREV);
+		ID_PREV);
 	//Bind(wxKeyEvent, &MainFrame::OnChar, this, ID_SELECT);
-	
-	audio->openStream();
-	timer = new wxTimer(this, 1);
-	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
-
-	timer->Start(1);
-}
-
-MainFrame::~MainFrame()
-{
-	timer->Stop();
 }
 
 void MainFrame::setCurrTrack(Node *track)
 {
 	if (isTrackLoop())
 	{
-		file->seek(0);
+		mFile->seek(0);
 	}
 	if (track != nullptr)
 	{
 		audio->stopStream();
 		currTrackPTR = track;
-		delete file;
-		file = new MusicFile(currTrackPTR->track->path);
+		delete mFile;
+		mFile = new MusicFile(currTrackPTR->track->path);
 		audio->resetCounter();
-		audio->openStream();
+		audio->openStream(mFile->getNumChannels(), mFile->getBitsPerSample(), mFile->getSampleRate());
 		audio->startStream();
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
-		timeSlider->SetRange(0, file->getDataSize());
+		timeSlider->SetRange(0, mFile->getDataSize());
 	}
 	else
 	{
@@ -187,6 +202,7 @@ void MainFrame::setCurrTrack(Node *track)
 
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
+	
 	//checks the audio stream for errors and handles it by shuting it down
 	//-9983 = stream is stopped
 	if (audio->err < 0 && audio->err != -9983)
@@ -197,12 +213,15 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 		Close(true);
 	}
 
-	if (audio->isStreaming() && audio->getCounter() * 4 < file->getDataSize() + 1)
+	if (mFile == nullptr)
+		return;
+
+	if (audio->isStreaming() && audio->getCounter() * 4 < mFile->getDataSize() + 1)
 	{
 		
-		if (audio->getCounter() * 4 < file->getDataSize() - (audio->getFramesPerBuffer() * 2))
+		if (audio->getCounter() * 4 < mFile->getDataSize() - (audio->getFramesPerBuffer() * 2))
 		{
-			file->readSample(audio->buffer, audio->getBufferSize());
+			mFile->readSample(audio->buffer, audio->getBufferSize());
 		}
 		for (int i = 0; i < audio->getBufferSize(); ++i)
 		{
@@ -212,7 +231,7 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 		audio->err = Pa_WriteStream(audio->audioStream, audio->buffer, audio->getFramesPerBuffer());
 		audio->increaseCounter();
 		
-		int n = file->getCurrTrackTime(audio->getCounter());
+		int n = mFile->getCurrTrackTime(audio->getCounter());
 		int min = n / 60;
 		n = n % 60;
 		int sec = n;
@@ -222,7 +241,7 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 		timeSlider->SetValue(audio->getCounter() * 4);
 		statusBar->SetStatusText(stream.str(), 2);
 	}
-	else if (audio->getCounter() * 4 >= file->getDataSize())
+	else if (audio->getCounter() * 4 >= mFile->getDataSize())
 	{
 		setCurrTrack(currTrackPTR->next);
 	}
@@ -356,7 +375,7 @@ void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->stopStream();
 	audio->setCounter(timeSlider->GetValue() / 4);
-	file->seek(timeSlider->GetValue());
+	mFile->seek(timeSlider->GetValue());
 	audio->clearBuffer();
 	audio->startStream();
 }
