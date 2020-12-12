@@ -24,6 +24,12 @@
 using std::fstream;
 using std::vector;
 
+enum PaState
+{
+	ACTIVE = 0,
+	STOPPED = 1,
+
+};
 class MainFrame : public wxFrame
 {
 public:

@@ -155,7 +155,7 @@ void MainFrame::initToolBar()
 	timeSlider = new wxSlider(toolBar, ID_TIME_SLIDER, 0, 0, 10,
 		wxDefaultPosition, wxSize(200, -1), wxSL_HORIZONTAL);
 
-	timeSlider->SetTickFreq(audio->getFramesPerBuffer());
+	//timeSlider->SetTickFreq(audio->getFramesPerBuffer());
 
 	toolBar->AddControl(timeSlider);
 	toolBar->Realize();
@@ -165,7 +165,8 @@ void MainFrame::initToolBar()
 	//Bind all tool bar events
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
-
+	Bind(wxEVT_COMMAND_SCROLLBAR_UPDATED, &MainFrame::OnTimeSlider, this, ID_VOL_SLIDER);
+	
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPlay, this,
 		ID_PLAY);
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnNext, this,
@@ -205,7 +206,7 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 	
 	//checks the audio stream for errors and handles it by shuting it down
 	//-9983 = stream is stopped
-	if (audio->err < 0 && audio->err != -9983)
+	if (audio->err != paNoError && audio->err != paStreamIsStopped)
 	{
 		timer->Stop();
 		wxMessageBox(audio->getErrorMessage());
@@ -374,6 +375,19 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->stopStream();
+	
+	// _mySlider stored as a class member variable. Could also be fetched from the event.
+	int val = timeSlider->GetValue();
+
+	int remainder = val % audio->getFramesPerBuffer(); // The step interval. Specify your value here.
+
+	// If the value is not evenly divisible by the step interval,
+	// snap the value to an even interval.
+	if (remainder != 0) {
+		val -= remainder;
+		timeSlider->SetValue(val);
+	}
+
 	audio->setCounter(timeSlider->GetValue() / 4);
 	mFile->seek(timeSlider->GetValue());
 	audio->clearBuffer();
