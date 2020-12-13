@@ -1,5 +1,5 @@
 #include "MainFrame.h"
-
+//TODO handle no selected track and finish orginizing MAINFRAME, Add loop 
 MainFrame::MainFrame(wxSize size,
 	 vector<Track> &masterVec,
 	 vector<Track *> &albumIndex,
@@ -11,6 +11,7 @@ MainFrame::MainFrame(wxSize size,
 	mArtistIndex = &artistIndex;
 	mLibraryPath = "Data/"; 
 	masterPlayList = new Playlist();
+	misPlaying = false;
 
 	//for (int i = 0; i < 4; ++i)
 	//{
@@ -53,6 +54,8 @@ MainFrame::MainFrame(wxSize size,
 MainFrame::~MainFrame()
 {
 	timer->Stop();
+	delete mFile;
+	delete audio;
 }
 
 /*initializes menu items and events*/
@@ -74,7 +77,6 @@ void MainFrame::initMenu()
 	libraryMenu->Append(ID_ARTIST, "Sort by A&rtist", "Sort Library by song artist");
 
 	controlMenu->Append(ID_PLAY, "&Play\tCtrl-P", "Play or pause track");
-	controlMenu->Append(ID_STOP, "&Stop\tCtrl-T", "Stop current track");
 	controlMenu->Append(ID_NEXT, "&Next\tCtrl-N", "Skip to next track");
 	controlMenu->Append(ID_PREV, "&Previous\tCtrl-B", "Skip to previous track");
 	controlMenu->AppendSeparator();
@@ -96,8 +98,6 @@ void MainFrame::initMenu()
 	SetMenuBar(menuBar);
 
 	//bind all menu events
-	
-	
 	Bind(wxEVT_MENU, &MainFrame::OnDir, this,
 		ID_DIR);
 	Bind(wxEVT_MENU, &MainFrame::OnScan, this,
@@ -116,6 +116,8 @@ void MainFrame::initMenu()
 		ID_NEXT);
 	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
 		ID_PREV);
+	Bind(wxEVT_MENU, &MainFrame::OnLoop, this,
+		ID_LOOP);
 	Bind(wxEVT_MENU, &MainFrame::OnLoopList, this,
 		ID_LOOPALL);
 
@@ -155,8 +157,6 @@ void MainFrame::initToolBar()
 	timeSlider = new wxSlider(toolBar, ID_TIME_SLIDER, 0, 0, 10,
 		wxDefaultPosition, wxSize(200, -1), wxSL_HORIZONTAL);
 
-	//timeSlider->SetTickFreq(audio->getFramesPerBuffer());
-
 	toolBar->AddControl(timeSlider);
 	toolBar->Realize();
 
@@ -173,7 +173,7 @@ void MainFrame::initToolBar()
 		ID_NEXT);
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPrev, this,
 		ID_PREV);
-	//Bind(wxKeyEvent, &MainFrame::OnChar, this, ID_SELECT);
+	
 }
 
 void MainFrame::setCurrTrack(Node *track)
@@ -181,8 +181,9 @@ void MainFrame::setCurrTrack(Node *track)
 	if (isTrackLoop())
 	{
 		mFile->seek(0);
+		audio->resetCounter();
 	}
-	if (track != nullptr)
+	else if (track != nullptr)
 	{
 		audio->stopStream();
 		currTrackPTR = track;
@@ -193,20 +194,46 @@ void MainFrame::setCurrTrack(Node *track)
 		audio->startStream();
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
 		timeSlider->SetRange(0, mFile->getDataSize());
+		misPlaying = true;
 	}
 	else
 	{
 		audio->stopStream();
 	}
-	
 }
 
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
-	
+	if (misPlaying)
+	{
+		bool success = audio->playAudio(mFile);
+		if (!success)
+		{
+			if (audio->getErr() != 0)
+			{
+				timer->Stop();
+				wxMessageBox(audio->getErrorMessage());
+				Close(true);
+			}
+			else
+			{
+				if (currTrackPTR != nullptr)
+				{
+					setCurrTrack(currTrackPTR->next);
+				}
+			}
+		}
+		else
+		{
+			string time = mFile->timeToString(audio->getCounter());
+			timeSlider->SetValue(audio->getCounter() * 4);
+			statusBar->SetStatusText(time, 2);
+		}
+	}
+		
 	//checks the audio stream for errors and handles it by shuting it down
 	//-9983 = stream is stopped
-	if (audio->err != paNoError && audio->err != paStreamIsStopped)
+	/*if (audio->err != paNoError && audio->err != paStreamIsStopped)
 	{
 		timer->Stop();
 		wxMessageBox(audio->getErrorMessage());
@@ -245,7 +272,7 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 	else if (audio->getCounter() * 4 >= mFile->getDataSize())
 	{
 		setCurrTrack(currTrackPTR->next);
-	}
+	}*/
 }
 
 void MainFrame::OnExit(wxCommandEvent &WXUNUSED(event))
@@ -269,7 +296,7 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 	if (!dir.IsOpened())
 	{
 		wxMessageBox(wxT("Sorry, could not open directory."));
-
+		return;
 	}
 	wxString fileName;
 	wxString fileType = "*.wav*";
@@ -283,11 +310,6 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 	}
 }
 
-void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
-{
-	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player\nThanks to icon king1 for the icons!\nFrom: https://freeicons.io/icon-list/material-icons-alert-and-av?page=1 \nLibrarys used\nAudio Streaming: Portaudio\nGUI: wxWidgets\n");
-	wxMessageBox(message);
-}
 void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
 {
 	mPanel->recreateList(00);
@@ -302,6 +324,7 @@ void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 }
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
+	misPlaying = !misPlaying;
 	if (!audio->isStreaming())
 	{
 		audio->startStream();
@@ -313,10 +336,6 @@ void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 }
 
 void MainFrame::OnPause(wxCommandEvent &WXUNUSED(event))
-{
-}
-
-void MainFrame::OnStop(wxCommandEvent &WXUNUSED(event))
 {
 }
 
@@ -359,14 +378,23 @@ void MainFrame::OnLoopList(wxCommandEvent &WXUNUSED(event))
 {
 	toggleLoopList();
 }
+
 void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
 	saveCurrPlaylist("Data/");
 }
+
 void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
 {
 	loadCurrPlayList("Data/");
 }
+
+void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
+{
+	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player\nThanks to icon king1 for the icons!\nFrom: https://freeicons.io/icon-list/material-icons-alert-and-av?page=1 \n\nLibrarys used:\nPortaudio\nwxWidgets\n");
+	wxMessageBox(message);
+}
+
 void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->setVolume(volSlider->GetValue() / 100.0f);
@@ -375,11 +403,11 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->stopStream();
-	
-	// _mySlider stored as a class member variable. Could also be fetched from the event.
+
+	//taken from https://wiki.wxwidgets.org/WxSlider_step_intervals
 	int val = timeSlider->GetValue();
 
-	int remainder = val % audio->getFramesPerBuffer(); // The step interval. Specify your value here.
+	int remainder = val % audio->getFramesPerBuffer(); // The step interval.
 
 	// If the value is not evenly divisible by the step interval,
 	// snap the value to an even interval.
@@ -392,12 +420,6 @@ void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 	mFile->seek(timeSlider->GetValue());
 	audio->clearBuffer();
 	audio->startStream();
-}
-
-void MainFrame::OnTimeSliderRealse(wxMouseEvent &event)
-{
-	audio->clearBuffer();
-	timer->Start();
 }
 
 void MainFrame::saveCurrPlaylist(string path)
@@ -467,13 +489,11 @@ void MainFrame::loadCurrPlayList(string path)
 		getline(inFile, track.path);
 		
 		masterPlayList->addRear(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
-	
 	}
 
 	mPanel->setPlaylist(&masterPlayList);
 	Node *ptr = masterPlayList->front();
 	setCurrTrack(ptr);
-
 }
 void MainFrame::readWavInfo(const string &path)
 {

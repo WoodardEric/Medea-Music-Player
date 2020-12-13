@@ -18,7 +18,7 @@
 
 #include<fstream>
 #include <string>
-#include <sstream>
+
 #include <vector>
 
 using std::fstream;
@@ -28,7 +28,6 @@ enum PaState
 {
 	ACTIVE = 0,
 	STOPPED = 1,
-
 };
 class MainFrame : public wxFrame
 {
@@ -43,11 +42,10 @@ public:
 	void initToolBar();
 
 	void setCurrTrack(Node *track);
-	void OnExit(wxCommandEvent &event);
+	
 	void OnDir(wxCommandEvent &event);
-
 	void OnScan(wxCommandEvent &event);
-	void OnAbout(wxCommandEvent &event);
+	void OnExit(wxCommandEvent &event);
 	
 	void OnTitle(wxCommandEvent &event);
 	void OnAlbum(wxCommandEvent &event);
@@ -55,7 +53,6 @@ public:
 
 	void OnPlay(wxCommandEvent &event);
 	void OnPause(wxCommandEvent &event);
-	void OnStop(wxCommandEvent &event);
 	void OnNext(wxCommandEvent &event);
 	void OnPrev(wxCommandEvent &event);
 	
@@ -65,27 +62,26 @@ public:
 	void OnSave(wxCommandEvent &event);
 	void OnLoad(wxCommandEvent &event);
 
+	void OnAbout(wxCommandEvent &event);
+
 	void OnSlider(wxCommandEvent &event);
 	void OnTimeSlider(wxCommandEvent &event);
 
 	void OnTimer(wxTimerEvent &event);
-	void OnTimeSliderRealse(wxMouseEvent &event);
 
-	void OnKeyDown(wxKeyEvent &event);
 	void saveCurrPlaylist(string path);
 	void loadCurrPlayList (string path);
-	//void OnLeftD( &event);
-
-	//void readSample();
+	
 	void toggleLoopTrack() {trackLoop = !trackLoop;}
 	bool isTrackLoop() {return trackLoop;}
 
 	void toggleLoopList() { listLoop = !listLoop; }
 	bool isListLoop() { return listLoop; }
 
+	bool getisPlaying() { return misPlaying; }
 	void readWavInfo(const string &path);
-	
 	void saveMasterList();
+
 private:
 	wxTimer *timer;
 
@@ -117,10 +113,9 @@ private:
 
 	bool listLoop;
 	bool trackLoop;
-	
+	bool misPlaying;
 	string mLibraryPath;
 };
-
 
 void advanceToNextTag(fstream &inFile);
 
