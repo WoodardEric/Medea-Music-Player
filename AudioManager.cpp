@@ -2,6 +2,7 @@
 
 AudioManager::AudioManager() 
 {
+	audioStream = nullptr;
 	short numChannels = 2;
 	mFrameCounter = 0;
 	mFramesPerBuffer = 1024;
@@ -119,7 +120,7 @@ bool AudioManager::playAudio(MusicFile *file)
 	if (file == nullptr)
 	{
 		err = Pa_IsStreamActive(audioStream);
-		if (err = 0)
+		if (err == 0)
 			stopStream();
 		return true;
 	}
@@ -130,11 +131,8 @@ bool AudioManager::playAudio(MusicFile *file)
 		{
 			file->readSample(buffer, mBufferSize);
 		}
-		for (int i = 0; i < mBufferSize; ++i)
-		{
-			buffer[i] *= mVolume;
-		}
-
+		
+		processBuffer();
 		err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
 		increaseCounter();
 		return true;
@@ -144,19 +142,28 @@ bool AudioManager::playAudio(MusicFile *file)
 	{
 		return false;
 	}
-}
 
-//TODO learn more maths
-void AudioManager::applyEq(float highpass, float high, float low)
+	return false;
+}
+void AudioManager::processBuffer()
 {
-	//int a = 0, b = 0, c = 0; //members of your effect, data is always maintained
-
-	//for (int i = 0; i < bufferSize; ++i)
-	//{
-	//	a += (13312 / file->getSampleRate()) * (buffer[i] - a); //x256
-	//	b += (1664.00 / file->getSampleRate()) * (buffer[i] - b); //x16
-	//	c += (104.000 / file->getSampleRate()) * (buffer[i] - c); //x1
-	//	buffer[i] = highpass * (buffer[i] - a) + high * (a - b) + low * (b - c) + 1 * c; //output is given for process function too
-	//}
+	for (int i = 0; i < mBufferSize; ++i)
+	{
+		buffer[i] *= mVolume;
+	}
 }
+//TODO learn more maths
+
+//void AudioManager::applyEq(float highpass, float high, float low)
+//{
+//	//int a = 0, b = 0, c = 0; //members of your effect, data is always maintained
+//
+//	//for (int i = 0; i < bufferSize; ++i)
+//	//{
+//	//	a += (13312 / file->getSampleRate()) * (buffer[i] - a); //x256
+//	//	b += (1664.00 / file->getSampleRate()) * (buffer[i] - b); //x16
+//	//	c += (104.000 / file->getSampleRate()) * (buffer[i] - c); //x1
+//	//	buffer[i] = highpass * (buffer[i] - a) + high * (a - b) + low * (b - c) + 1 * c; //output is given for process function too
+//	//}
+//}
 	

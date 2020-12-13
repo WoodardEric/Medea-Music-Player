@@ -37,13 +37,15 @@ public:
 	void setParameters(int numChannels, int bitsPerSample);
 
 	bool playAudio(MusicFile *file);
-	void applyEq(float highpass, float high, float low);
+	void processBuffer();
 	void clearBuffer();
+
+	//TODO
+	//void applyEq(float highpass, float high, float low);
 	
+private:
 	int16_t *buffer;
 	PaStream *audioStream;
-
-private:
 	PaError err;
 	PaStreamParameters parameters;
 	const PaDeviceInfo *deviceInfo;
