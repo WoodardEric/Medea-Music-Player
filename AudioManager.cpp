@@ -4,7 +4,7 @@ AudioManager::AudioManager()
 {
 	short numChannels = 2;
 	mFrameCounter = 0;
-	framesPerBuffer = 1024;
+	mFramesPerBuffer = 1024;
 	err = Pa_Initialize();
 	parameters.device = Pa_GetDefaultOutputDevice();
 	deviceInfo = Pa_GetDeviceInfo(parameters.device);
@@ -13,8 +13,8 @@ AudioManager::AudioManager()
 	parameters.suggestedLatency = deviceInfo->defaultHighOutputLatency;
 	parameters.hostApiSpecificStreamInfo = NULL;
 
-	bufferSize = (framesPerBuffer * numChannels);
-	buffer = new int16_t[bufferSize];	
+	mBufferSize = (mFramesPerBuffer * numChannels);
+	buffer = new int16_t[mBufferSize];	
 }
 
 AudioManager::~AudioManager()
@@ -31,7 +31,7 @@ void AudioManager::openStream(const int numChannels, const int bitsPerSample, co
 		0,
 		&parameters,
 		sampleRate,
-		framesPerBuffer,
+		mFramesPerBuffer,
 		paClipOff,
 		NULL, //no callback, use blocking API 
 		NULL); //no callback, so no callback userData 
@@ -57,7 +57,7 @@ void AudioManager::Terminate()
 	err = Pa_Terminate();
 }
 
-bool AudioManager::isStreaming()
+bool AudioManager::isStreaming() const
 {
 	return Pa_IsStreamActive(audioStream);
 }
@@ -95,22 +95,60 @@ void AudioManager::setParameters(int numChannels, int bitsPerSample)
 	//	}
 }
 
-string AudioManager::getErrorMessage()
+string AudioManager::getErrorMessage() const
 {
 	return Pa_GetErrorText(err);
 }
 
 void AudioManager::clearBuffer()
 {
-	for (int i = 0; i < bufferSize; ++i)
+	for (int i = 0; i < mBufferSize; ++i)
 	{
 		buffer[i] = 0;
 	}
 }
 
+bool AudioManager::playAudio(MusicFile *file)
+{
+	if (err != paNoError && err != paStreamIsStopped)
+	{
+		Terminate();
+		return false;
+	}
+
+	if (file == nullptr)
+	{
+		err = Pa_IsStreamActive(audioStream);
+		if (err = 0)
+			stopStream();
+		return true;
+	}
+	if (isStreaming() && mFrameCounter * 4 < file->getDataSize() + 1)
+	{
+
+		if (mFrameCounter * 4 < file->getDataSize() - (mFramesPerBuffer * 2))
+		{
+			file->readSample(buffer, mBufferSize);
+		}
+		for (int i = 0; i < mBufferSize; ++i)
+		{
+			buffer[i] *= mVolume;
+		}
+
+		err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
+		increaseCounter();
+		return true;
+	}
+	//change 4 to byte alighn
+	else if (mFrameCounter * 4 >= file->getDataSize())
+	{
+		return false;
+	}
+}
+
+//TODO learn more maths
 void AudioManager::applyEq(float highpass, float high, float low)
 {
-	
 	//int a = 0, b = 0, c = 0; //members of your effect, data is always maintained
 
 	//for (int i = 0; i < bufferSize; ++i)
