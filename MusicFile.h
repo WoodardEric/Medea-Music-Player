@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 using std::string;
 using std::ios;
@@ -94,6 +95,8 @@ public:
 	std::streampos getDataPos() { return header.dataPos; }
 	int getEndPos() { return header.dataPos + header.subChunk2Size; }
 	int getCurrPos() { return fileStream.tellg(); }
+
+	string timeToString(const long &numFrames);
 	
 private:
 	fstream fileStream;
