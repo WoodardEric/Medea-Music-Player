@@ -15,12 +15,15 @@ struct AudioHeader
 {
 	AudioHeader(fstream &inFile)
 	{
+		uint8_t chunkID[4];
 		inFile.read(reinterpret_cast<char *>(&chunkID), sizeof(uint8_t) * 4);
 		inFile.read(reinterpret_cast<char *>(&chunkSize), sizeof(uint32_t));
 
 		uint8_t format[4];
 		inFile.read(reinterpret_cast<char *>(&format), sizeof(uint8_t) * 4);
 
+		uint8_t subChunk1ID[4];
+		uint32_t subChunk1Size;
 		inFile.read(reinterpret_cast<char *>(&subChunk1ID), sizeof(uint8_t) * 4);
 		inFile.read(reinterpret_cast<char *>(&subChunk1Size), sizeof(uint32_t));
 
@@ -40,6 +43,7 @@ struct AudioHeader
 				//error can't read WAVE_FORMAT_EXTENSIBLE
 			}
 		}
+		char subChunk2ID[4];
 		char data[]{ 'd', 'a', 't', 'a' };
 		inFile.read(reinterpret_cast<char *>(&subChunk2ID), sizeof(uint8_t) * 4);
 		while (std::strncmp(subChunk2ID, data, 4) != 0)
@@ -51,15 +55,11 @@ struct AudioHeader
 		}
 
 		inFile.read(reinterpret_cast<char *>(&subChunk2Size), sizeof(uint32_t));
-		numSamples = subChunk2Size / ((bitsPerSample / 8) * numChannels);
+		duration = subChunk2Size / (sampleRate * numChannels * bitsPerSample / 8);
 		dataPos = inFile.tellg();
 	}
 
-	uint8_t chunkID[4];
 	uint32_t chunkSize;
-
-	uint8_t subChunk1ID[4];
-	uint32_t subChunk1Size;
 
 	uint16_t audioFormat;
 	uint16_t numChannels;
@@ -69,17 +69,15 @@ struct AudioHeader
 	uint16_t blockAlighn;
 	uint16_t bitsPerSample;
 
-	char subChunk2ID[4];
 	uint32_t subChunk2Size;
-	int numSamples;
-
-	int dataPos;
+	
+	int duration;
+	std::streamoff dataPos;
 };
 
 class MusicFile
 {
 public:
-	MusicFile();
 	MusicFile(string path);
 	~MusicFile();
 	void readSample(int16_t buffer[], int bufferSize);
@@ -88,15 +86,16 @@ public:
 	int getNumChannels() const { return header.numChannels; }
 	uint16_t getBitsPerSample() const { return header.bitsPerSample; }
 	long getDataSize() const { return header.subChunk2Size; }
+
 	int getCurrTrackTime(const long &numFrames);
 	void seek(long bytes);
-	fstream& getFileStream() { return fileStream; }
 
 	std::streampos getDataPos() { return header.dataPos; }
-	int getEndPos() { return header.dataPos + header.subChunk2Size; }
-	int getCurrPos() { return fileStream.tellg(); }
+	std::streampos getEndPos() { return header.dataPos + header.subChunk2Size; }
+	std::streampos getCurrPos() { return fileStream.tellg(); }
 
 	string timeToString(const long &numFrames);
+	string timeToString();
 	
 private:
 	fstream fileStream;

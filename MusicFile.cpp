@@ -8,7 +8,6 @@ MusicFile::MusicFile(string path) : fileStream(path, ios::in | ios::binary), hea
 MusicFile::~MusicFile()
 {
 	fileStream.close();
-	//delete header;
 }
 void MusicFile::readSample(int16_t buffer[], int bufferSize)
 {
@@ -37,6 +36,24 @@ string MusicFile::timeToString(const long &numFrames)
 	std::ostringstream stream;
 	std::string trackTime;
 	
+	stream << min << ':';
+	if (sec < 10)
+		stream << 0 + sec;
+	else
+		stream << sec;
+
+	return stream.str();
+}
+
+string MusicFile::timeToString()
+{
+	int n = header.duration;
+	int min = n / 60;
+	n = n % 60;
+	int sec = n;
+	std::ostringstream stream;
+	std::string trackTime;
+
 	stream << min << ':';
 	if (sec < 10)
 		stream << 0 + sec;
