@@ -59,17 +59,17 @@ struct AudioHeader
 		dataPos = inFile.tellg();
 	}
 
-	uint32_t chunkSize;
+	uint32_t chunkSize; //file size
 
-	uint16_t audioFormat;
-	uint16_t numChannels;
+	uint16_t audioFormat; //
+	uint16_t numChannels; //number of audio channels usually two
 
-	uint32_t sampleRate;
-	uint32_t byteRate;
-	uint16_t blockAlighn;
-	uint16_t bitsPerSample;
+	uint32_t sampleRate; //samples per second (probably 44100 or 48000)
+	uint32_t byteRate; //bytes per second
+	uint16_t blockAlighn; //bytes per frame
+	uint16_t bitsPerSample; 
 
-	uint32_t subChunk2Size;
+	uint32_t subChunk2Size; //size of the audio data
 	
 	int duration;
 	std::streamoff dataPos;
@@ -85,6 +85,7 @@ public:
 	uint32_t getSampleRate()  const { return header.sampleRate; }
 	int getNumChannels() const { return header.numChannels; }
 	uint16_t getBitsPerSample() const { return header.bitsPerSample; }
+	uint16_t getBlockAlighn() const { return header.blockAlighn; }
 	long getDataSize() const { return header.subChunk2Size; }
 
 	int getCurrTrackTime(const long &numFrames);
