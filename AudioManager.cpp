@@ -111,12 +111,10 @@ void AudioManager::clearBuffer()
 
 bool AudioManager::playAudio(MusicFile *file)
 {
-	if (err != paNoError && err != paStreamIsStopped)
+	if (err != paNoError && err != paStreamIsStopped && err != paOutputUnderflowed)
 	{
-		Terminate();
 		return false;
 	}
-
 	if (file == nullptr)
 	{
 		err = Pa_IsStreamActive(audioStream);
@@ -124,21 +122,15 @@ bool AudioManager::playAudio(MusicFile *file)
 			stopStream();
 		return true;
 	}
-	if (isStreaming() && mFrameCounter * 4 < file->getDataSize() + 1)
+	if (isStreaming() && file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3)
 	{
-
-		if (mFrameCounter * 4 < file->getDataSize() - (mFramesPerBuffer * 2))
-		{
-			file->readSample(buffer, mBufferSize);
-		}
-		
+		file->readSample(buffer, mBufferSize);
 		processBuffer();
 		err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
 		increaseCounter();
 		return true;
 	}
-	//change 4 to byte alighn
-	else if (mFrameCounter * 4 >= file->getDataSize())
+	else if (mFrameCounter * file->getBlockAlighn() >= file->getDataSize())
 	{
 		return false;
 	}
