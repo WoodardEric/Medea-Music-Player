@@ -105,6 +105,7 @@ private:
 	vector<Track*> *mAlbumIndex;
 	vector<Track*> *mArtistIndex;
 	
+	//TODO move to child
 	Playlist *masterPlayList;
 	
 	MusicFile *mFile;

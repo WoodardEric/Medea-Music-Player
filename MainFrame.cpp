@@ -13,15 +13,7 @@ MainFrame::MainFrame(wxSize size,
 	masterPlayList = new Playlist();
 	misPlaying = false;
 
-	//for (int i = 0; i < 4; ++i)
-	//{
-	//	masterPlayList->addRear(&(*mLibrary)[i]);
-	//}
-	
-	//currTrackPTR = masterPlayList->front();
-	//file = new MusicFile(currTrackPTR->track->path);
 	mFile = nullptr;
-	//mFile = new MusicFile();
 	audio = new AudioManager();
 
 	//sets icon in top corner
@@ -185,6 +177,7 @@ void MainFrame::setCurrTrack(Node *track)
 	}
 	else if (track != nullptr)
 	{
+		audio->clearBuffer();
 		audio->stopStream();
 		currTrackPTR = track;
 		delete mFile;
@@ -204,18 +197,21 @@ void MainFrame::setCurrTrack(Node *track)
 
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
+	//TODO check if there is a activated track or playlist is empty
 	if (misPlaying)
 	{
+		//True if audio data was successfully passed to the audio stream
 		bool success = audio->playAudio(mFile);
 		if (!success)
 		{
-			if (audio->getErr() != 0)
+			if (audio->getErr() != 0) //unrecoverable error (TODO handle more errors)
 			{
 				timer->Stop();
 				wxMessageBox(audio->getErrorMessage());
+				audio->Terminate();
 				Close(true);
 			}
-			else
+			else //end of track reached
 			{
 				if (currTrackPTR != nullptr)
 				{
@@ -223,56 +219,13 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 				}
 			}
 		}
-		else
+		else //update time slider and status
 		{
 			string time = mFile->timeToString(audio->getCounter());
 			timeSlider->SetValue(audio->getCounter() * 4);
 			statusBar->SetStatusText(time, 2);
 		}
 	}
-		
-	//checks the audio stream for errors and handles it by shuting it down
-	//-9983 = stream is stopped
-	/*if (audio->err != paNoError && audio->err != paStreamIsStopped)
-	{
-		timer->Stop();
-		wxMessageBox(audio->getErrorMessage());
-		audio->Terminate();
-		Close(true);
-	}
-
-	if (mFile == nullptr)
-		return;
-
-	if (audio->isStreaming() && audio->getCounter() * 4 < mFile->getDataSize() + 1)
-	{
-		
-		if (audio->getCounter() * 4 < mFile->getDataSize() - (audio->getFramesPerBuffer() * 2))
-		{
-			mFile->readSample(audio->buffer, audio->getBufferSize());
-		}
-		for (int i = 0; i < audio->getBufferSize(); ++i)
-		{
-			audio->buffer[i] *= audio->getVolume();
-		}
-		
-		audio->err = Pa_WriteStream(audio->audioStream, audio->buffer, audio->getFramesPerBuffer());
-		audio->increaseCounter();
-		
-		int n = mFile->getCurrTrackTime(audio->getCounter());
-		int min = n / 60;
-		n = n % 60;
-		int sec = n;
-		std::ostringstream stream;
-		std::string trackTime;
-		stream << min << ':' << sec;
-		timeSlider->SetValue(audio->getCounter() * 4);
-		statusBar->SetStatusText(stream.str(), 2);
-	}
-	else if (audio->getCounter() * 4 >= mFile->getDataSize())
-	{
-		setCurrTrack(currTrackPTR->next);
-	}*/
 }
 
 void MainFrame::OnExit(wxCommandEvent &WXUNUSED(event))
