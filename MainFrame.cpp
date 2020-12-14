@@ -1,5 +1,5 @@
 #include "MainFrame.h"
-//TODO handle no selected track and finish orginizing MAINFRAME, Add loop 
+//TODO move on to children
 MainFrame::MainFrame(wxSize size,
 	 vector<Track> &masterVec,
 	 vector<Track *> &albumIndex,
@@ -277,6 +277,10 @@ void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 }
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
+	if (currTrackPTR == nullptr)
+	{
+		return;
+	}
 	misPlaying = !misPlaying;
 	if (!audio->isStreaming())
 	{
