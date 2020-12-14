@@ -38,7 +38,7 @@ string MusicFile::timeToString(const long &numFrames)
 	
 	stream << min << ':';
 	if (sec < 10)
-		stream << 0 + sec;
+		stream << 0 << sec;
 	else
 		stream << sec;
 
