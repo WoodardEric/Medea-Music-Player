@@ -8,9 +8,9 @@ MainPanel::MainPanel(wxPanel *parent, Playlist **list,
 	mParent = parent;
 	mPTRMove = nullptr;
 	mFirstIndex = -1;
-	sortByTitle = true;
-	sortByArtist = false;
-	sortByAlbum = false;
+	mSortByTitle = true;
+	mSortByArtist = false;
+	mSortByAlbum = false;
 	
 	wxBoxSizer *const sizer = new wxBoxSizer(wxHORIZONTAL);
 	mPlaylistCtrl = new PlayListCtrl(this, ID_LIST, list);
@@ -110,7 +110,6 @@ void MainPanel::OnLibraruPopupClick(wxCommandEvent &event)
 	}
 }
 
-
 Node *findNode(long i)
 {
 	return nullptr;
@@ -118,22 +117,25 @@ Node *findNode(long i)
 
 void MainPanel::toggleByTitle()
 {
-	sortByTitle = true;
-	sortByAlbum = false;
-	sortByArtist = false;
+	mSortByTitle = true;
+	mSortByAlbum = false;
+	mSortByArtist = false;
 }
+
 void MainPanel::toggleByArtist()
 {
-	sortByTitle = false;
-	sortByAlbum = false;
-	sortByArtist = true;
+	mSortByTitle = false;
+	mSortByAlbum = false;
+	mSortByArtist = true;
 }
+
 void MainPanel::toggleByAlbum()
 {
-	sortByTitle = false;
-	sortByAlbum = true;
-	sortByArtist = false;
+	mSortByTitle = false;
+	mSortByAlbum = true;
+	mSortByArtist = false;
 }
+
 void MainPanel::sendActivated(long index)
 {
 	if (sortByTitle)

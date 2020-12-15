@@ -1,14 +1,16 @@
 #ifndef MAINPANEL_H
 #define MAINPANEL_H
 
+#include "IDs.h"
+#include "LibraryCtrl.h"
+#include "PlayListCtrl.h"
+
 #include <wx/wx.h>
 #include <wx/listctrl.h>
-#include "PlayListCtrl.h"
-#include "LibraryCtrl.h"
-#include "IDs.h"
-#include <vector>
+
 #include <fstream>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::ifstream;
@@ -23,7 +25,6 @@ public:
     string getListName() const { return mPlaylistCtrl->getName(); }
     //int getListSize() const { return mPlaylist->size(); }
     void setPlaylist(Playlist **list);
-   
    
     void clearLibraryCtrl();
 
@@ -57,9 +58,9 @@ private:
     vector<Track *> &mAlbumIndex;
     vector<Track *> &mArtistIndex;
 
-    bool sortByTitle;
-    bool sortByArtist;
-    bool sortByAlbum;
+    bool mSortByTitle;
+    bool mSortByArtist;
+    bool mSortByAlbum;
 };
 
 

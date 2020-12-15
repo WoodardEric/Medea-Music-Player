@@ -139,7 +139,13 @@ void Playlist::remove(long index)
     if (ptr == mHead)
     {
         mHead = ptr->next;
-        mHead->prev = nullptr;
+        if(ptr->next != nullptr)
+            mHead->prev = nullptr;
+        else
+        {
+            mTail = mHead = nullptr;
+            mSize = 0;
+        }
     }
     else if(ptr == mTail)
     {

@@ -11,8 +11,6 @@
 using std::string;
 using std::ifstream;
 
-
-
 class PlayListCtrl : public wxListView
 {
 public:
