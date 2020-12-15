@@ -1,6 +1,7 @@
 #include "MusicFile.h"
 
-MusicFile::MusicFile(string path) : fileStream(path, ios::in | ios::binary), header(fileStream)
+MusicFile::MusicFile(string path) 
+	: fileStream(path, ios::in | ios::binary), header(fileStream)
 {
 	//fileStream.open(path, ios::in | ios::binary);
 	

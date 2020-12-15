@@ -101,10 +101,7 @@ public:
 private:
 	fstream fileStream;
 	AudioHeader header;
-	
 };
-
-
 
 #endif
 

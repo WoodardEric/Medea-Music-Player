@@ -1,6 +1,13 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
+#pragma warning(disable : 4996)
+#include "AudioManager.h"
+#include "IDs.h"
+#include "index.h"
+#include "MainPanel.h"
+#include "MusicFile.h"
+
 #include "portaudio.h"
 #include <wx/wx.h>
 #include <wx/dir.h>
@@ -10,15 +17,8 @@
 #include <wx/button.h>
 #include <wx/slider.h>
 
-#include "MainPanel.h"
-#include "AudioManager.h"
-#include "MusicFile.h"
-#include "IDs.h"
-#include "index.h"
-
 #include<fstream>
 #include <string>
-
 #include <vector>
 
 using std::fstream;

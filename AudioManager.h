@@ -1,10 +1,9 @@
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
 
-#include <stdio.h>
-
-#include "portaudio.h"
 #include "MusicFile.h"
+#include "portaudio.h"
+#include <stdio.h>
 
 class AudioManager
 {

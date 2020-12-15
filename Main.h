@@ -11,24 +11,21 @@
  @author Eric Woodard
  @date   12/11/2020
  **********************************************************************/
-
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "index.h"
+#include "MainFrame.h"
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
-
 #ifdef __BORLANDC__
 #   pragma hdrstop
 #endif
-
 #ifndef WX_PRECOMP
 	// Include your minimal set of headers here, or wx.h
 #   include <wx/wx.h>
 #endif
-
-#include "index.h"
-#include "MainFrame.h"
 
 #include <vector>
 
