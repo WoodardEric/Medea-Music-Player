@@ -54,10 +54,10 @@ public:
 	Playlist();
 	//~Playlist();
 	
-	Node* front()  { return mHead; } 
-	Node* rear()  { return mTail; }	
+	Node* front() const  { return mHead; } 
+	Node* rear() const { return mTail; }	
 	int size() { return mSize; }
-	string getName() const { return mName; }
+	const string& getName() const { return mName; }
 
 	void readPlayListFile();
 	void writePlayListFile();

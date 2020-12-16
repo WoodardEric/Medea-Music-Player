@@ -113,6 +113,8 @@ void sortByArtist(vector<Track *> &index)
 /**
  * uses binary search to find index in the vector of last name being searched for
  *
+ * TODO: Deal with repeat titles
+ * 
  * @param index vector of pointers indexed to students vector.
  * @param name name being searched for
  */
@@ -133,7 +135,6 @@ int searchByTitle(vector<Track> &index, string title)
 
         else
             first = middle + 1;
-
     }
     return -1;
 }

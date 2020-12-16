@@ -15,6 +15,7 @@ enum MusicPlayerIDs
     ID_STOP,
     ID_SAVE,
     ID_LOAD,
+    ID_CLEAR,
     ID_TITLE,
     ID_ARTIST,
     ID_ALBUM,

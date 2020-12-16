@@ -61,6 +61,7 @@ public:
 
 	void OnSave(wxCommandEvent &event);
 	void OnLoad(wxCommandEvent &event);
+	void OnClear(wxCommandEvent &event);
 
 	void OnAbout(wxCommandEvent &event);
 
@@ -69,7 +70,6 @@ public:
 
 	void OnTimer(wxTimerEvent &event);
 
-	void saveCurrPlaylist(string path);
 	void loadCurrPlayList (string path);
 	
 	void toggleLoopTrack() {trackLoop = !trackLoop;}
@@ -105,8 +105,6 @@ private:
 	vector<Track*> *mAlbumIndex;
 	vector<Track*> *mArtistIndex;
 	
-	//TODO move to child
-	Playlist *masterPlayList;
 	
 	MusicFile *mFile;
 	AudioManager *audio;

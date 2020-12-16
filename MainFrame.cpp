@@ -1,5 +1,5 @@
 #include "MainFrame.h"
-//TODO move on to children
+//TODO fix prev and next on looping
 MainFrame::MainFrame(wxSize size,
 	 vector<Track> &masterVec,
 	 vector<Track *> &albumIndex,
@@ -10,7 +10,6 @@ MainFrame::MainFrame(wxSize size,
 	mAlbumIndex = &albumIndex;
 	mArtistIndex = &artistIndex;
 	mLibraryPath = "Data/"; 
-	masterPlayList = new Playlist();
 	misPlaying = false;
 
 	mFile = nullptr;
@@ -22,7 +21,7 @@ MainFrame::MainFrame(wxSize size,
 	initMenu();
 	
 	mParent = new wxPanel(this);
-	mPanel = new MainPanel(mParent, &masterPlayList, mLibrary, *mAlbumIndex, *mArtistIndex);
+	mPanel = new MainPanel(mParent, mLibrary, *mAlbumIndex, *mArtistIndex);
 	
 	hbox = new wxBoxSizer(wxHORIZONTAL);
 	hbox->Add(mPanel, 1, wxEXPAND | wxALL, 5);
@@ -77,6 +76,7 @@ void MainFrame::initMenu()
 
 	playListMenu->Append(ID_SAVE, "&Save\tCtrl-S", "Save current playlist");
 	playListMenu->Append(ID_LOAD, "Loa&d\tCtrl-D", "Load a playlist");
+	playListMenu->Append(ID_CLEAR, "&Clear\tAlt-C", "Clear the playlist");
 
 	helpMenu->Append(wxID_ABOUT, "&About\tCtrl-A", "About dialogue");
 
@@ -117,6 +117,8 @@ void MainFrame::initMenu()
 		ID_SAVE);
 	Bind(wxEVT_MENU, &MainFrame::OnLoad, this,
 		ID_LOAD);
+	Bind(wxEVT_MENU, &MainFrame::OnClear, this,
+		ID_CLEAR);
 
 	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
 		wxID_ABOUT);
@@ -306,7 +308,7 @@ void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 	{
 		if (isListLoop())
 		{
-			setCurrTrack(masterPlayList->front());
+			//setCurrTrack(mPanel->);
 		}
 	}
 }
@@ -321,7 +323,7 @@ void MainFrame::OnPrev(wxCommandEvent &WXUNUSED(event))
 	{
 		if (isListLoop())
 		{
-			setCurrTrack(masterPlayList->rear());
+			//setCurrTrack(masterPlayList->rear());
 		}
 	}
 }
@@ -338,12 +340,16 @@ void MainFrame::OnLoopList(wxCommandEvent &WXUNUSED(event))
 
 void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
-	saveCurrPlaylist("Data/");
+	mPanel->saveCurrPlaylist("Data/");
 }
 
 void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
 {
 	loadCurrPlayList("Data/");
+}
+void MainFrame::OnClear(wxCommandEvent &WXUNUSED(event))
+{
+	mPanel->clearPlaylist();
 }
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
@@ -379,32 +385,6 @@ void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 	audio->startStream();
 }
 
-void MainFrame::saveCurrPlaylist(string path)
-{
-	Node *ptr = mPanel->getFront();
-	fstream outFile(path + mPanel->getListName(), ios_base::out);
-	if (!outFile)
-	{
-		wxMessageBox(wxT("Could not load file." + mPanel->getListName()));
-		return;
-	}
-
-	while (ptr->next != nullptr)
-	{
-		outFile << ptr->track->title << ',' << ptr->track->album << ','
-			<< ptr->track->artist << ',' << ptr->track->year << ','
-			<< ptr->track->genre << ',' << ptr->track->trackNumber << ','
-			<< ptr->track->length << ',' << ptr->track->rating << ','
-			<< ptr->track->timesPlayed << ',' << ptr->track->path << '\n';
-		ptr = ptr->next;
-	}
-	
-	outFile << ptr->track->title << ',' << ptr->track->album << ','
-		<< ptr->track->artist << ',' << ptr->track->year << ','
-		<< ptr->track->genre << ',' << ptr->track->trackNumber << ','
-		<< ptr->track->length << ',' << ptr->track->rating << ','
-		<< ptr->track->timesPlayed << ',' << ptr->track->path;
-}
 
 void MainFrame::loadCurrPlayList(string path)
 {
@@ -423,34 +403,15 @@ void MainFrame::loadCurrPlayList(string path)
 		wxMessageBox(wxT("Sorry, could not open playlist."));
 		return;
 	}
-	masterPlayList->clear();
-
+	
 	while (!inFile.eof())
 	{
 		Track track;
-		char del;
 		getline(inFile, track.title, ',');
 		getline(inFile, track.album, ',');
-		getline(inFile, track.artist, ',');
-		inFile >> track.year;
-		inFile >> del;
-		getline(inFile, track.genre, ',');
-		inFile >> track.trackNumber;
-		inFile >> del;
-		inFile >> track.length;
-		inFile >> del;
-		inFile >> track.rating;
-		inFile >> del;
-		inFile >> track.timesPlayed;
-		inFile >> del;
 		getline(inFile, track.path);
-		
-		masterPlayList->addRear(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
+		mPanel->appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
 	}
-
-	mPanel->setPlaylist(&masterPlayList);
-	Node *ptr = masterPlayList->front();
-	setCurrTrack(ptr);
 }
 void MainFrame::readWavInfo(const string &path)
 {

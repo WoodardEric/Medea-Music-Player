@@ -4,6 +4,7 @@
 #include "IDs.h"
 #include "LibraryCtrl.h"
 #include "PlayListCtrl.h"
+#include "Playlist.h"
 
 #include <wx/wx.h>
 #include <wx/listctrl.h>
@@ -19,22 +20,22 @@ class MainPanel : public wxPanel
 {
    
 public:
-    MainPanel(wxPanel *parent, Playlist **list,  
-        vector<Track> *vec, vector<Track *> &mAlbumIndex, vector<Track *> &mArtistIndex);
+    MainPanel(wxPanel *parent, vector<Track> *vec, 
+        vector<Track *> &mAlbumIndex, vector<Track *> &mArtistIndex);
     
-    string getListName() const { return mPlaylistCtrl->getName(); }
-    //int getListSize() const { return mPlaylist->size(); }
-    void setPlaylist(Playlist **list);
-   
-    void clearLibraryCtrl();
+    const string& getListName() const { return mPlaylist.getName(); }
+ 
+    void appendTrack(Track *track);
+    void removeTrack(long index);
+    void saveCurrPlaylist(string path);
+    void OnPopupClick(wxCommandEvent &event);
+    void OnRightClick(wxListEvent &event);
 
     void OnAtivate(wxListEvent &event);
     void OnLibraryAtivate(wxListEvent &event);
     void OnLibraryRightClick(wxListEvent &event);
     void OnLibraruPopupClick(wxCommandEvent &event);
-    Node* findNode(long i);
-    Node* findNode(Node* node);
-    Node *getFront() const { return mPlaylistCtrl->front(); }
+
     void recreateList(short flags);
     void loadPlayListFromFile(string path);
     void clearPlaylist();
@@ -53,7 +54,9 @@ private:
     PlayListCtrl *mPlaylistCtrl;
     LibraryCtrl *mLibraryCtrl;
     wxPanel *mParent;
-    
+
+    Playlist mPlaylist;
+
     vector<Track> &mLibrary;
     vector<Track *> &mAlbumIndex;
     vector<Track *> &mArtistIndex;
