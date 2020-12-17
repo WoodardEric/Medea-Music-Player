@@ -5,8 +5,11 @@
 #include "AudioManager.h"
 #include "IDs.h"
 #include "index.h"
-#include "MainPanel.h"
+#include "LibraryPanel.h"
+#include "PlaylistPanel.h"
 #include "MusicFile.h"
+
+//#include "PlaylistCtrl.h"
 
 #include "portaudio.h"
 #include <wx/wx.h>
@@ -21,7 +24,7 @@
 #include <string>
 #include <vector>
 
-using std::fstream;
+using std::ifstream;
 using std::vector;
 
 enum PaState
@@ -82,6 +85,8 @@ public:
 	void readWavInfo(const string &path);
 	void saveMasterList();
 
+	PlaylistPanel* getPlaylistPanel() { return mPlaylistPanel; }
+
 private:
 	wxTimer *timer;
 
@@ -92,7 +97,8 @@ private:
 	wxMenu *helpMenu;
 	wxMenuBar *menuBar;
 
-	MainPanel *mPanel;
+	LibraryPanel *mLibraryPanel;
+	PlaylistPanel *mPlaylistPanel;
 	wxPanel *mParent;
 	wxBoxSizer *hbox;
 	
@@ -104,7 +110,6 @@ private:
 	vector<Track> *mLibrary;
 	vector<Track*> *mAlbumIndex;
 	vector<Track*> *mArtistIndex;
-	
 	
 	MusicFile *mFile;
 	AudioManager *audio;

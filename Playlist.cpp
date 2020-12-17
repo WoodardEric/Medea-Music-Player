@@ -1,46 +1,44 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  Playlist.cpp
+
+ @brief:
+
+ Manages the playlist which is a doubly linked list and the nodes hold
+ a pointer to a track from the master playlist vector.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ TODO: figure out where to place Track struct in project
+ **********************************************************************/
 #include "Playlist.h"
 
-
+ /*
+ * Default Playlist constructor
+ */
 Playlist::Playlist()
 {
     mHead = nullptr;
     mTail = nullptr;
     mSize = 0;
     mName = "5TrackWonder";
-    //readPlayListFile();
 }
 
-//void Playlist::readPlayListFile()
-//{
-//    fstream inFile("data/playList.csv", ios_base::in);
-//
-//    if (!inFile)
-//    {
-//      
-//    }
-//
-//    while (!inFile.eof())
-//    {
-//        char del;
-//        Track rec;
-//        getline(inFile, rec.artist, ',');
-//        getline(inFile, rec.album, ',');
-//        getline(inFile, rec.title, ',');
-//        getline(inFile, rec.genre, ',');
-//        inFile >> rec.timesPlayed;
-//        inFile >> del;
-//        inFile >> rec.rating;
-//        inFile.get(del);
-//
-//        addRear(rec);
-//    }
-//    inFile.close();
-//}
-
-void Playlist::writePlayListFile()
+/*
+ * Default Playlist destructor
+ */
+Playlist::~Playlist()
 {
+    clear();
 }
 
+/*
+ * Adds track to the front of the playList
+ * 
+ * @param *track to be added at the front of the playlist
+ */
 void Playlist::addFront(Track *track)
 {
     if (mHead == nullptr)
@@ -55,7 +53,11 @@ void Playlist::addFront(Track *track)
 
     ++mSize;
 }
-
+/*
+ * Adds track to the rear of the playList
+ *
+ * @param *track to be added at the rear of the playlist
+ */
 void Playlist::addRear(Track *track)
 {
     if (mTail == nullptr)
@@ -70,6 +72,10 @@ void Playlist::addRear(Track *track)
 
     ++mSize;
 }
+/*
+ * deletes every node in the playlist and sets mSize to 0
+ *
+ */
 void Playlist::clear()
 {
     while (mHead != nullptr)
@@ -82,12 +88,12 @@ void Playlist::clear()
     mTail = nullptr;
     mSize = 0;
 }
-//void Playlist::insert(Node* node, Track *track)
-//{
-//    Node* newNode = new Node(track, node->next, node);
-//    node->next = newNode;
-//    newNode->next->prev = newNode;
-//}
+/*
+ * moves a track node to a different location in the playlist
+ *
+ * @param *node being moved
+ * @param index location where the node is being moved.
+ */
 void Playlist::move(Node *node, long index)
 {
     Node *ptr = traverse(index);
@@ -105,7 +111,7 @@ void Playlist::move(Node *node, long index)
             ptr->next->next = node->next;
         }
     }
-
+   
     if (node->next == ptr)
     {
         node->prev->next = ptr;
@@ -132,7 +138,11 @@ void Playlist::move(Node *node, long index)
         mTail->next = nullptr;
     }
 }
-
+/*
+ * removes a track node from a specific location in the playlist
+ *
+ * @param index location of the node being deleted.
+ */
 void Playlist::remove(long index)
 {
     Node *ptr = traverse(index);
@@ -160,8 +170,13 @@ void Playlist::remove(long index)
     delete ptr;
 }
 
-
-Node* Playlist::traverse(long index)
+/*
+ * traverses the playlist to an index 
+ *
+ * @param index of the location being sought.
+ * @return a pointer to the node at the index.
+ */
+Node* Playlist::traverse(const long index)
 {
     Node *node = mHead;
     for (int i = 0; i < index; ++i)
@@ -170,10 +185,3 @@ Node* Playlist::traverse(long index)
     }
     return node;
 }
-
-string Playlist::toString()
-{
-    return string();
-}
-
-

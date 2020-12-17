@@ -1,17 +1,24 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  Playlist.h
+
+ @brief:
+
+ Manages the playlist which is a doubly linked list and the nodes hold 
+ a pointer to a track from the master playlist vector.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ TODO: figure out where to place struct Track in project
+ **********************************************************************/
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
 
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <vector>
-
+//ignores compile error about std function deprecation in wxWidgets' wxcrt.h
+#pragma warning(disable : 4996) 
 #include "MusicFile.h"
-
-using std::fstream;
-using std::string;
-using std::ios;
-using std::ios_base;
 
 struct Track
 {
@@ -48,39 +55,29 @@ struct Node
 
 class Playlist
 {
-
 public:
 
 	Playlist();
-	//~Playlist();
+	~Playlist();
 	
 	Node* front() const  { return mHead; } 
 	Node* rear() const { return mTail; }	
-	int size() { return mSize; }
+	int size() const { return mSize; }
 	const string& getName() const { return mName; }
-
-	void readPlayListFile();
-	void writePlayListFile();
 
 	void addFront(Track *track);
 	void addRear(Track *track);
-
 	void clear();
-
-	void insert(Node *node, Track *track);
+	
 	void move(Node *node, long index);
-	Node* traverse(long index);
 	void remove(long index);
-	void moveTrack();
-
-	string toString();
+	Node *traverse(const long index);
 
 private:
 	int mSize;
 	Node *mHead;
 	Node *mTail;
-	string mName;
-	
+	string mName; //name of playlist
 };
 
 #endif

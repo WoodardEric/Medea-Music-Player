@@ -15,14 +15,14 @@ AudioManager::AudioManager()
 	parameters.hostApiSpecificStreamInfo = NULL;
 
 	mBufferSize = (mFramesPerBuffer * numChannels);
-	buffer = new int16_t[mBufferSize];	
+	buffer = new void*[mBufferSize];	
 }
+
 
 AudioManager::~AudioManager()
 {
 	err = Pa_Terminate();
 }
-
 void AudioManager::openStream(const int numChannels, const int bitsPerSample, const int sampleRate)
 {
 	setParameters(numChannels, bitsPerSample);
@@ -42,7 +42,6 @@ void AudioManager::startStream()
 {
 	err = Pa_StartStream(audioStream);
 }
-
 void AudioManager::stopStream()
 {
 	err = Pa_StopStream(audioStream);
@@ -137,13 +136,19 @@ bool AudioManager::playAudio(MusicFile *file)
 
 	return false;
 }
+
 void AudioManager::processBuffer()
 {
+	if (mVolume == 1.0)
+	{
+		return;
+	}
 	for (int i = 0; i < mBufferSize; ++i)
 	{
-		buffer[i] *= mVolume;
+		*static_cast<uint16_t*>(buffer[i]) *= mVolume;
 	}
 }
+
 //TODO learn more maths
 
 //void AudioManager::applyEq(float highpass, float high, float low)

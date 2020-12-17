@@ -2,8 +2,10 @@
 #define AUDIOMANAGER_H
 
 #include "MusicFile.h"
+
 #include "portaudio.h"
 #include <stdio.h>
+
 
 class AudioManager
 {
@@ -43,7 +45,8 @@ public:
 	//void applyEq(float highpass, float high, float low);
 	
 private:
-	int16_t *buffer;
+	
+	void* *buffer;
 	PaStream *audioStream;
 	PaError err;
 	PaStreamParameters parameters;
@@ -55,7 +58,6 @@ private:
 	
 	
 };
-
 
 
 #endif

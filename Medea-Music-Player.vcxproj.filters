@@ -38,13 +38,16 @@
     <ClCompile Include="MusicFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LibraryCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Index.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LibraryPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaylistPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,9 +70,6 @@
     <ClInclude Include="MusicFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MainPanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LibraryCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,6 +77,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="index.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaylistPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LibraryPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,7 +27,8 @@
     <ClCompile Include="MusicFile.cpp" />
     <ClCompile Include="Playlist.cpp" />
     <ClCompile Include="PlayListCtrl.cpp" />
-    <ClCompile Include="MainPanel.cpp" />
+    <ClCompile Include="LibraryPanel.cpp" />
+    <ClCompile Include="PlaylistPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IDs.h" />
@@ -38,8 +39,9 @@
     <ClInclude Include="MusicFile.h" />
     <ClInclude Include="Playlist.h" />
     <ClInclude Include="PlayListCtrl.h" />
-    <ClInclude Include="MainPanel.h" />
+    <ClInclude Include="LibraryPanel.h" />
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="PlaylistPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icons.rc" />

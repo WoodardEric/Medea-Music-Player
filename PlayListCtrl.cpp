@@ -1,9 +1,29 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  PlaylistCtrl.h
+
+ @brief:
+
+ Adds and removes playlist for the listCtrl and displays playlist
+ track info to the screen as a list.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ **********************************************************************/
+
 #include "PlayListCtrl.h"
 
-PlayListCtrl::PlayListCtrl(wxWindow *parent, wxWindowID id)
+/*
+* PlaylistCtrl constructor
+*
+* @param *parent pointer to parent panel
+*/
+PlaylistCtrl::PlaylistCtrl(wxWindow *parent)
 	: wxListView(parent, ID_LIST, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_HRULES)
 { 
-	//Add columns to Ctrl list        
+	//Add columns to ListView       
 	wxListItem playlistNum;
 	playlistNum.SetId(0);
 	playlistNum.SetText(_("#"));
@@ -23,8 +43,12 @@ PlayListCtrl::PlayListCtrl(wxWindow *parent, wxWindowID id)
 	InsertColumn(2, albumCol);
 
 }
-
-void PlayListCtrl::updateListView(const Playlist &list)
+/*
+* repopulates PlaylistCtrl
+*
+* @param &list playlist being added to PlaylistCtrl
+*/
+void PlaylistCtrl::updateListView(const Playlist &list)
 {
 	Node *ptr = list.front();
 	
@@ -38,22 +62,37 @@ void PlayListCtrl::updateListView(const Playlist &list)
 	}
 }
 
-void PlayListCtrl::addTrack(Track *track, long index)
+/*
+* adds a track at specific index to the PlaylistCtrl
+*
+* @param *track that is being added to PlaylistCtrl
+* @param index location of where track is being inserted
+*/
+void PlaylistCtrl::addTrack(const Track *track, const long index)
 {
 	wxString i = wxString::Format(wxT("%i"), index);
 	long itemIndex = InsertItem(index, i); //want this for col. 1
 	SetItem(itemIndex, 1, track->title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
-
-void PlayListCtrl::appendTrack(const Track *track)
+/*
+* adds a track to end of the PlaylistCtrl
+*
+* @param *track that is being added to PlaylistCtrl
+*/
+void PlaylistCtrl::appendTrack(const Track *track)
 {
 	long index = GetItemCount();
 	long itemIndex = InsertItem(index, index); //want this for col. 1
 	SetItem(itemIndex, 1, track->title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
-void PlayListCtrl::removeTrack(long index)
+/*
+* removes a track from the playlist at a specific index
+*
+* @param index location of where track is being deleted
+*/
+void PlaylistCtrl::removeTrack(const long index)
 {
 	DeleteItem(index);
 }

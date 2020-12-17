@@ -19,22 +19,21 @@ MainFrame::MainFrame(wxSize size,
 	SetIcon(wxICON(icon));
 	
 	initMenu();
-	
-	mParent = new wxPanel(this);
-	mPanel = new MainPanel(mParent, mLibrary, *mAlbumIndex, *mArtistIndex);
-	
+
+	mParent = new wxPanel(this, wxID_ANY);
+	mLibraryPanel = new LibraryPanel(mParent, mLibrary, *mAlbumIndex, *mArtistIndex);
+	mPlaylistPanel = new PlaylistPanel(mParent);
 	hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(mPanel, 1, wxEXPAND | wxALL, 5);
+	hbox->Add(mLibraryPanel, wxSizerFlags(2).Expand().Border());
+	hbox->Add(mPlaylistPanel, wxSizerFlags(2).Expand().Border());
 	mParent->SetSizer(hbox);
+	this->Center();
 
 	initToolBar();
-
 	statusBar = new wxStatusBar(this, wxID_ANY);
 	SetStatusBar(statusBar);
 	statusBar->SetFieldsCount(3);
 	statusBar->SetStatusText(wxT("Ready"), 0);
-
-	//audio->openStream();
 
 	timer = new wxTimer(this, 1);
 	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
@@ -68,6 +67,7 @@ void MainFrame::initMenu()
 	libraryMenu->Append(ID_ARTIST, "Sort by A&rtist", "Sort Library by song artist");
 
 	controlMenu->Append(ID_PLAY, "&Play\tCtrl-P", "Play or pause track");
+	controlMenu->Append(ID_STOP, "&Stop\tCtrl-O", "Stop current track");
 	controlMenu->Append(ID_NEXT, "&Next\tCtrl-N", "Skip to next track");
 	controlMenu->Append(ID_PREV, "&Previous\tCtrl-B", "Skip to previous track");
 	controlMenu->AppendSeparator();
@@ -104,6 +104,8 @@ void MainFrame::initMenu()
 	Bind(wxEVT_MENU, &MainFrame::OnArtist, this,
 		ID_ARTIST);
 
+	Bind(wxEVT_MENU, &MainFrame::OnPlay, this,
+		ID_PLAY);
 	Bind(wxEVT_MENU, &MainFrame::OnNext, this,
 		ID_NEXT);
 	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
@@ -263,19 +265,24 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 		readWavInfo(mLibraryPath + file);
 		cont = dir.GetNext(&fileName);
 	}
+
+	saveMasterList();
 }
 
 void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
 {
-	mPanel->recreateList(00);
+	mLibraryPanel->toggleByTitle();
+	mLibraryPanel->recreateList();
 }
 void MainFrame::OnAlbum(wxCommandEvent &WXUNUSED(event))
 {
-	mPanel->recreateList(10);
+	mLibraryPanel->toggleByAlbum();
+	mLibraryPanel->recreateList();
 }
 void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 {
-	mPanel->recreateList(20);
+	mLibraryPanel->toggleByArtist();
+	mLibraryPanel->recreateList();
 }
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
@@ -308,7 +315,7 @@ void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 	{
 		if (isListLoop())
 		{
-			//setCurrTrack(mPanel->);
+			//setCurrTrack(mLibraryPanel->);
 		}
 	}
 }
@@ -340,7 +347,7 @@ void MainFrame::OnLoopList(wxCommandEvent &WXUNUSED(event))
 
 void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
-	mPanel->saveCurrPlaylist("Data/");
+	mPlaylistPanel->saveCurrPlaylist("Data/");
 }
 
 void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
@@ -349,7 +356,7 @@ void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
 }
 void MainFrame::OnClear(wxCommandEvent &WXUNUSED(event))
 {
-	mPanel->clearPlaylist();
+	mPlaylistPanel->clearPlaylist();
 }
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
@@ -385,7 +392,6 @@ void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 	audio->startStream();
 }
 
-
 void MainFrame::loadCurrPlayList(string path)
 {
 	wxFileDialog dialog(this);
@@ -395,22 +401,25 @@ void MainFrame::loadCurrPlayList(string path)
 		//error
 	}
 	wxString str = dialog.GetPath();
-	string fileName = string(str.mb_str());
-	mPanel->clearPlaylist();
-	ifstream inFile(fileName);
+	string filePath = string(str.mb_str());
+	//mLibraryPanel->loadPlayListFromFile(filePath);
+
+	mPlaylistPanel->clearPlaylist();
+	ifstream inFile(filePath);
 	if (!inFile)
 	{
 		wxMessageBox(wxT("Sorry, could not open playlist."));
 		return;
 	}
-	
+
 	while (!inFile.eof())
 	{
 		Track track;
 		getline(inFile, track.title, ',');
 		getline(inFile, track.album, ',');
 		getline(inFile, track.path);
-		mPanel->appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
+		//appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
+		mPlaylistPanel->appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
 	}
 }
 void MainFrame::readWavInfo(const string &path)

@@ -10,6 +10,14 @@
 
  @author Eric Woodard
  @date   12/11/2020
+
+ Priority TODO:
+ *Find less arbitrary way to fix pop at end of track(almost certain it is
+  tag info being read into audio stream)
+ *Handle current track being removed from playlist
+ *Highligt current track in playlistCtrl
+ *figure out better buffering method/handle reading audio file 
+  on different thread
  **********************************************************************/
 #ifndef MAIN_H
 #define MAIN_H

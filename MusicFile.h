@@ -75,12 +75,13 @@ struct AudioHeader
 	std::streamoff dataPos;
 };
 
+
 class MusicFile
 {
 public:
 	MusicFile(string path);
 	~MusicFile();
-	void readSample(int16_t buffer[], int bufferSize);
+	void readSample(void* buffer[], int bufferSize);
 
 	uint32_t getSampleRate()  const { return header.sampleRate; }
 	int getNumChannels() const { return header.numChannels; }
