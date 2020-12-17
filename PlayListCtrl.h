@@ -36,6 +36,7 @@ public:
 	void addTrack(const Track *track, const long index);
 	void appendTrack(const Track *track);
 	void removeTrack(const long index);
+	long findTrack(const Track *track);
 	
 private:
 };

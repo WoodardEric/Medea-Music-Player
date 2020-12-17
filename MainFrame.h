@@ -1,23 +1,37 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  MainFrame.h
+
+ @brief:
+
+ Manages the file menus, toolbar, statusbar, child panels,
+ and communicates with audio and file managers.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ //TODO fix prev and next on looping
+ **********************************************************************/
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
+ //ignores compile error about std function deprecation in wxWidgets' wxcrt.h
 #pragma warning(disable : 4996)
 #include "AudioManager.h"
 #include "IDs.h"
 #include "index.h"
 #include "LibraryPanel.h"
-#include "PlaylistPanel.h"
 #include "MusicFile.h"
-
-//#include "PlaylistCtrl.h"
+#include "PlaylistPanel.h"
 
 #include "portaudio.h"
 #include <wx/wx.h>
+#include <wx/button.h>
 #include <wx/dir.h>
 #ifndef wxHAS_IMAGES_IN_RESOURCES
 #include "icons.xpm"
 #endif
-#include <wx/button.h>
 #include <wx/slider.h>
 
 #include<fstream>
@@ -27,7 +41,7 @@
 using std::ifstream;
 using std::vector;
 
-enum PaState
+enum class PaState
 {
 	ACTIVE = 0,
 	STOPPED = 1,
@@ -45,7 +59,8 @@ public:
 	void initToolBar();
 
 	void setCurrTrack(Node *track);
-	
+	Node *getCurrTrack() const { return currTrackPTR; }
+
 	void OnDir(wxCommandEvent &event);
 	void OnScan(wxCommandEvent &event);
 	void OnExit(wxCommandEvent &event);
@@ -75,11 +90,11 @@ public:
 
 	void loadCurrPlayList (string path);
 	
-	void toggleLoopTrack() {trackLoop = !trackLoop;}
-	bool isTrackLoop() {return trackLoop;}
+	void toggleLoopTrack() {loopTrack = !loopTrack;}
+	bool isTrackLoop() {return loopTrack;}
 
-	void toggleLoopList() { listLoop = !listLoop; }
-	bool isListLoop() { return listLoop; }
+	void toggleLoopList() { loopAll = !loopAll; }
+	bool isListLoop() { return loopAll; }
 
 	bool getisPlaying() { return misPlaying; }
 	void readWavInfo(const string &path);
@@ -115,8 +130,8 @@ private:
 	AudioManager *audio;
 	Node *currTrackPTR;
 
-	bool listLoop;
-	bool trackLoop;
+	bool loopAll;
+	bool loopTrack;
 	bool misPlaying;
 	string mLibraryPath;
 };

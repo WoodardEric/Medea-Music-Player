@@ -1,3 +1,17 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  MusicFile.h
+
+ @brief:
+
+ manages reading audio files
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ TODO: Rename to AudioFile.h
+ **********************************************************************/
 #ifndef MUSICFILE_H
 #define MUSICFILE_H
 
@@ -67,12 +81,12 @@ struct AudioHeader
 	uint32_t sampleRate; //samples per second (probably 44100 or 48000)
 	uint32_t byteRate; //bytes per second
 	uint16_t blockAlighn; //bytes per frame
-	uint16_t bitsPerSample; 
+	uint16_t bitsPerSample; //
 
 	uint32_t subChunk2Size; //size of the audio data
 	
-	int duration;
-	std::streamoff dataPos;
+	int duration; //length of audio data
+	std::streamoff dataPos; //loction of audio data in the file
 };
 
 

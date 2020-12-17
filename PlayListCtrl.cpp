@@ -70,9 +70,11 @@ void PlaylistCtrl::updateListView(const Playlist &list)
 */
 void PlaylistCtrl::addTrack(const Track *track, const long index)
 {
+	//needs updating
 	wxString i = wxString::Format(wxT("%i"), index);
+	wxString title(track->title);
 	long itemIndex = InsertItem(index, i); //want this for col. 1
-	SetItem(itemIndex, 1, track->title); //want this for col. 2
+	SetItem(itemIndex, 1, title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
 /*
@@ -83,7 +85,8 @@ void PlaylistCtrl::addTrack(const Track *track, const long index)
 void PlaylistCtrl::appendTrack(const Track *track)
 {
 	long index = GetItemCount();
-	long itemIndex = InsertItem(index, index); //want this for col. 1
+	wxString i = wxString::Format(wxT("%i"), index + 1);
+	long itemIndex = InsertItem(index, i); //want this for col. 1
 	SetItem(itemIndex, 1, track->title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
@@ -97,4 +100,16 @@ void PlaylistCtrl::removeTrack(const long index)
 	DeleteItem(index);
 }
 
+long PlaylistCtrl::findTrack(const Track *track)
+{
+	for (long i = 0; i < GetItemCount(); ++i)
+	{
+		if (GetItemText(i, 1) == track->title)
+		{
+			return i;
+		}
+	}
 
+	return -1;
+	
+}

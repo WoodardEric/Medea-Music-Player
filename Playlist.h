@@ -20,8 +20,31 @@
 #pragma warning(disable : 4996) 
 #include "MusicFile.h"
 
+#include <sstream>
+#include <string>
+
+using std::ostringstream;
+using std::string;
+
 struct Track
 {
+	string lengthToString() const
+	{
+		int n = length;
+		int min = n / 60;
+		n = n % 60;
+		int sec = n;
+		std::ostringstream stream;
+
+		stream << min << ':';
+		if (sec < 10)
+			stream << 0 << sec;
+		else
+			stream << sec;
+
+		return stream.str();
+	}
+
 	string title = "Unkown";
 	string album = "Unkown";
 	string artist = "Unkown";
@@ -33,6 +56,8 @@ struct Track
 	short rating = 0;
 	int timesPlayed = 0;
 	string path = "";
+
+	
 };
 
 struct Node

@@ -1,11 +1,26 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  AudioManger.h
+
+ @brief:
+
+ Manages the audio stream/tracking the playing audio file 
+ and manages the sample buffer
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ TODO: 
+ *figure out best way to handle different sample sizes
+ *Fix click at end of track
+ **********************************************************************/
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
 
 #include "MusicFile.h"
-
 #include "portaudio.h"
 #include <stdio.h>
-
 
 class AudioManager
 {
@@ -23,19 +38,20 @@ public:
 	string getErrorMessage() const;
 	bool isStreaming() const;
 
-	PaError getErr() { return err; }
-	
-	float getVolume() const { return mVolume; }
-	void setVolume(float vol) { mVolume = vol; }
+	PaError getErr() const { return err; }
 
-	void resetCounter() { mFrameCounter = 0; }
+	float getVolume() const { return mVolume; }
+	void setVolume(const float vol) { mVolume = vol; }
+
 	long getCounter() const { return mFrameCounter; }
+	void setCounter(const long numFrames) { mFrameCounter = numFrames; }
 	void increaseCounter() { mFrameCounter += mFramesPerBuffer; }
-	void setCounter(long numFrames) { mFrameCounter = numFrames; }
+	void resetCounter() { mFrameCounter = 0; }
 
 	int getBufferSize() const { return mBufferSize; }
 	int getFramesPerBuffer() const { return mFramesPerBuffer; }
-	void setParameters(int numChannels, int bitsPerSample);
+
+	void setParameters(const int numChannels, const int bitsPerSample);
 
 	bool playAudio(MusicFile *file);
 	void processBuffer();
@@ -45,7 +61,6 @@ public:
 	//void applyEq(float highpass, float high, float low);
 	
 private:
-	
 	void* *buffer;
 	PaStream *audioStream;
 	PaError err;

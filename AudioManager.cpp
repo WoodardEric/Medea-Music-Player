@@ -1,5 +1,21 @@
-#include "AudioManager.h"
+/**********************************************************************
+ Medea: A Digital Music Player
 
+ @file  AudioManger.cpp
+
+ @brief:
+
+ Manages the audio stream/tracking the playing audio file
+ and manages the sample buffer
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ **********************************************************************/
+#include "AudioManager.h"
+/*
+* Default AudioManager constructor
+*/
 AudioManager::AudioManager() 
 {
 	audioStream = nullptr;
@@ -18,11 +34,20 @@ AudioManager::AudioManager()
 	buffer = new void*[mBufferSize];	
 }
 
-
+/*
+* Default AudioManager destructor. Terminates the audio stream
+*/
 AudioManager::~AudioManager()
 {
 	err = Pa_Terminate();
 }
+/*
+* Opens and initilizes an audio stream to the sound card
+* 
+* @param numChannels number of channels from the audio file
+* @param bitsPerSample number of bits each sample contain 
+* @param sampleRate number of samples per seconds
+*/
 void AudioManager::openStream(const int numChannels, const int bitsPerSample, const int sampleRate)
 {
 	setParameters(numChannels, bitsPerSample);
@@ -37,32 +62,50 @@ void AudioManager::openStream(const int numChannels, const int bitsPerSample, co
 		NULL, //no callback, use blocking API 
 		NULL); //no callback, so no callback userData 
 }
-
+/*
+* starts an audio stream and sets error status on return
+*/
 void AudioManager::startStream()
 {
 	err = Pa_StartStream(audioStream);
 }
+/*
+* stops an audio stream and sets error status on return
+*/
 void AudioManager::stopStream()
 {
 	err = Pa_StopStream(audioStream);
 }
-
+/*
+* closes an audio stream and sets error status on return
+*/
 void AudioManager::closeStream()
 {
 	err = Pa_CloseStream(audioStream);
 }
-
+/*
+* aborts an audio stream and sets error status on return
+*/
 void AudioManager::Terminate()
 {
 	err = Pa_Terminate();
 }
-
+/*
+* checks to see if audio stream is active
+* 
+* @return true if stream is active else returns false
+*/
 bool AudioManager::isStreaming() const
 {
 	return Pa_IsStreamActive(audioStream);
 }
-
-void AudioManager::setParameters(int numChannels, int bitsPerSample)
+/*
+* sets the stream parameters
+*
+* @param numChannels number channels in the audio data
+* @param bitsPerSample number of bits in each sample
+*/
+void AudioManager::setParameters(const int numChannels, const int bitsPerSample)
 {
 	parameters.channelCount = numChannels;
 	
@@ -94,12 +137,18 @@ void AudioManager::setParameters(int numChannels, int bitsPerSample)
 	//		//error code
 	//	}
 }
-
+/*
+* turns the error code into human readable text
+*
+* @return the error message from port audio
+*/
 string AudioManager::getErrorMessage() const
 {
 	return Pa_GetErrorText(err);
 }
-
+/*
+* clears buffer by setting all values to 0
+*/
 void AudioManager::clearBuffer()
 {
 	for (int i = 0; i < mBufferSize; ++i)
@@ -107,7 +156,11 @@ void AudioManager::clearBuffer()
 		buffer[i] = 0;
 	}
 }
-
+/*
+* fill buffer from a file, process audio, then sends it to the stream
+* 
+* @param *file being read
+*/
 bool AudioManager::playAudio(MusicFile *file)
 {
 	if (err != paNoError && err != paStreamIsStopped && err != paOutputUnderflowed)
@@ -136,7 +189,10 @@ bool AudioManager::playAudio(MusicFile *file)
 
 	return false;
 }
-
+/*
+* processes each sample in the buffer
+* currently only multiples a sample by the current volume
+*/
 void AudioManager::processBuffer()
 {
 	if (mVolume == 1.0)

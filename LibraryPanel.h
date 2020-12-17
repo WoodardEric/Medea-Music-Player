@@ -52,8 +52,6 @@ public:
     void recreateList();
     void sendActivated(long index);
 
-   
-
 private:
     LibraryCtrl *mLibraryCtrl;
     wxPanel *mParent;

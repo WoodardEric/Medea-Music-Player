@@ -1,5 +1,26 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  MainFrame.cpp
+
+ @brief:
+
+ Manages the file menus, toolbar, statusbar, child panels,
+ and communicates with audio and file managers.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ **********************************************************************/
 #include "MainFrame.h"
-//TODO fix prev and next on looping
+/*
+* MainFrame constructor
+* 
+* @param size the size of the window
+* @param masterVec the master library that contians all audio track
+* @param albumIndex the library indexed by album
+* @param artistIndex the library index by artist
+*/
 MainFrame::MainFrame(wxSize size,
 	 vector<Track> &masterVec,
 	 vector<Track *> &albumIndex,
@@ -40,9 +61,12 @@ MainFrame::MainFrame(wxSize size,
 	timer->Start(1);
 }
 
-/*It is important to stop the timer otherwise wxWidgets throws an exception*/
+/*
+* default destructor
+*/
 MainFrame::~MainFrame()
 {
+	///It is important to stop the timer otherwise wxWidgets throws an exception
 	timer->Stop();
 	delete mFile;
 	delete audio;
@@ -171,7 +195,11 @@ void MainFrame::initToolBar()
 		ID_PREV);
 	
 }
-
+/*
+* sets a track to be read and played
+* 
+* @param track the node that contains a pointer to the track
+*/
 void MainFrame::setCurrTrack(Node *track)
 {
 	if (isTrackLoop())
@@ -183,6 +211,15 @@ void MainFrame::setCurrTrack(Node *track)
 	{
 		audio->clearBuffer();
 		audio->stopStream();
+		if (currTrackPTR != nullptr)
+		{
+			mPlaylistPanel->focusTrack(currTrackPTR->track, track->track);
+		}
+		else
+		{
+			mPlaylistPanel->focusTrack(track->track);
+		}
+
 		currTrackPTR = track;
 		delete mFile;
 		mFile = new MusicFile(currTrackPTR->track->path);
@@ -192,13 +229,20 @@ void MainFrame::setCurrTrack(Node *track)
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
 		timeSlider->SetRange(0, mFile->getDataSize());
 		misPlaying = true;
+		
+
 	}
 	else
 	{
 		audio->stopStream();
 	}
 }
-
+/*
+* called after an interval of microseconds passes
+* used to play audio
+*
+* @param event the timer event being caught
+*/
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
 	//TODO check if there is a activated track or playlist is empty
@@ -231,12 +275,23 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 		}
 	}
 }
-
+/*
+* called when exit menu clicked
+* Closes the program
+* 
+* @param event the menu event being caught
+*/
 void MainFrame::OnExit(wxCommandEvent &WXUNUSED(event))
 {
 	timer->Stop();
 	Close(true);
 }
+/*
+* called when set dir menu clicked
+* Opens a dialog to select a path to music library on the computer
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnDir(wxCommandEvent &WXUNUSED(event))
 {
 	wxString def = wxT("/");
@@ -247,6 +302,12 @@ void MainFrame::OnDir(wxCommandEvent &WXUNUSED(event))
 		wxMessageBox(mLibraryPath);
 	}
 }
+/*
+* called when scan menu clicked
+* scans library directory and adds track to master library
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 {
 	wxDir dir(mLibraryPath);
@@ -268,22 +329,45 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 
 	saveMasterList();
 }
-
+/*
+* called when sort by title menu clicked
+* Triggers the program to sort by title
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
 {
 	mLibraryPanel->toggleByTitle();
 	mLibraryPanel->recreateList();
 }
+/*
+* called when sort by album menu clicked
+* Triggers the program to sort by album 
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnAlbum(wxCommandEvent &WXUNUSED(event))
 {
 	mLibraryPanel->toggleByAlbum();
 	mLibraryPanel->recreateList();
 }
+/*
+* called when sort by artist menu clicked
+* Triggers the program to sort by artist
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 {
 	mLibraryPanel->toggleByArtist();
 	mLibraryPanel->recreateList();
 }
+/*
+* called when play menu clicked
+* Toggles the audio stream to start/stop
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
 	if (currTrackPTR == nullptr)
@@ -304,7 +388,12 @@ void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 void MainFrame::OnPause(wxCommandEvent &WXUNUSED(event))
 {
 }
-
+/*
+* called when next menu clicked
+* calls currTrack to the next node in the playlist
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 {
 	if(currTrackPTR->next != nullptr)
@@ -319,7 +408,12 @@ void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 		}
 	}
 }
-
+/*
+* called when prev menu clicked
+* calls currTrack to the previous node in the playlist
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnPrev(wxCommandEvent &WXUNUSED(event))
 {
 	if (currTrackPTR->prev != nullptr)
@@ -334,42 +428,83 @@ void MainFrame::OnPrev(wxCommandEvent &WXUNUSED(event))
 		}
 	}
 }
-
+/*
+* called when loop menu clicked
+* toggles loopTrack
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnLoop(wxCommandEvent &WXUNUSED(event))
 {
 	toggleLoopTrack();
 }
-
+/*
+* called when loop all menu clicked
+* toggles loopAll
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnLoopList(wxCommandEvent &WXUNUSED(event))
 {
 	toggleLoopList();
 }
-
+/*
+* called when save menu clicked
+* saves playlist to a file
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
 	mPlaylistPanel->saveCurrPlaylist("Data/");
 }
-
+/*
+* called when Load menu clicked
+* Loads a playlist from a file
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
 {
 	loadCurrPlayList("Data/");
 }
+/*
+* called when clear menu clicked
+* clears the current playlist
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnClear(wxCommandEvent &WXUNUSED(event))
 {
 	mPlaylistPanel->clearPlaylist();
 }
-
+/*
+* called when about menu clicked
+* Creates a popup dialog to dispaly program info
+*
+* @param event the menu event being caught
+*/
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 {
 	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player\nThanks to icon king1 for the icons!\nFrom: https://freeicons.io/icon-list/material-icons-alert-and-av?page=1 \n\nLibrarys used:\nPortaudio\nwxWidgets\n");
 	wxMessageBox(message);
 }
-
+/*
+* called when volume slider moved
+* sets the audio volume
+*
+* @param event unused for backwards compatibility
+*/
 void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->setVolume(volSlider->GetValue() / 100.0f);
 }
-
+/*
+* called when timer slider moved
+* seeks throug the audio file
+*
+* @param event unused for backwards compatibility
+*/
 void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
 	audio->stopStream();
@@ -391,14 +526,18 @@ void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 	audio->clearBuffer();
 	audio->startStream();
 }
-
+/*
+* loads a playlist from a file
+*
+* @param path the location of the playlist on the computer
+*/
 void MainFrame::loadCurrPlayList(string path)
 {
 	wxFileDialog dialog(this);
 
 	if (!dialog.ShowModal() == wxID_OK)
 	{
-		//error
+		wxMessageBox(wxT("Sorry, could not open dialog."));
 	}
 	wxString str = dialog.GetPath();
 	string filePath = string(str.mb_str());
@@ -418,10 +557,15 @@ void MainFrame::loadCurrPlayList(string path)
 		getline(inFile, track.title, ',');
 		getline(inFile, track.album, ',');
 		getline(inFile, track.path);
-		//appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
 		mPlaylistPanel->appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
 	}
 }
+/*
+* reads wav header and tag info from a file. Then adds a new track to the master library.
+* Used while scanning music library directory
+*
+* @param path the location of the library directory on the computer
+*/
 void MainFrame::readWavInfo(const string &path)
 {
 	Track track;
@@ -504,7 +648,9 @@ void MainFrame::readWavInfo(const string &path)
 	inFile.close();
 	mLibrary->push_back(track);
 }
-
+/*
+* save the masterList as a csv file
+*/
 void MainFrame::saveMasterList()
 {
 	fstream outFile("Data/masterList.csv", ios::out);
@@ -530,7 +676,9 @@ void MainFrame::saveMasterList()
 	outFile.close();
 	
 }
-
+/*
+* reads the empty space after a tag until the next tag is found
+*/
 void advanceToNextTag(fstream &inFile)
 {
 	char delem;
@@ -539,4 +687,3 @@ void advanceToNextTag(fstream &inFile)
 		inFile.get(delem);
 	}
 }
-

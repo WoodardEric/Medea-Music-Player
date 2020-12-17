@@ -132,6 +132,31 @@ void PlaylistPanel::removeTrack(long index)
 }
 
 /*
+* Sets PlaylistCtrl focus to new curretnly playing track
+* and removes focus from the previous.
+*
+* @param currTrack the track that was focused
+* @param nextTrack the track to be focused
+*/
+void PlaylistPanel::focusTrack(const Track *currTrack, const Track *nextTrack)
+{
+	long index = mPlaylistCtrl->findTrack(currTrack);
+	mPlaylistCtrl->Select(index, false);
+	index = mPlaylistCtrl->findTrack(nextTrack);
+	mPlaylistCtrl->Select(index, true);
+	//mPlaylistCtrl->SetItemState(index,  wxLIST_STATE_SELECTED , wxLIST_STATE_FOCUSED);
+}
+/*
+* Sets PlaylistCtrl focus to new curretnly playing track
+*
+* @param track the track to be focused
+*/
+void PlaylistPanel::focusTrack(const Track *track)
+{
+	long index = mPlaylistCtrl->findTrack(track);
+	mPlaylistCtrl->Select(index, true);
+}
+/*
 * Saves current playlist to a csv file by saving track's title, album, and path.
 *
 * @param path loction playlist will be saved at

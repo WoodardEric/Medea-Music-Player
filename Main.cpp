@@ -16,6 +16,9 @@
 //macro that sets up the main function, makes an instance of MedeApp, and calls OnInit
 IMPLEMENT_APP(MedeaApp);
 
+/*
+* acts as main function. Creates the main window and initializes the music library
+*/
 bool MedeaApp::OnInit()
 {
 	initMasterLibrary();
@@ -26,7 +29,9 @@ bool MedeaApp::OnInit()
 
     return true;
 }
-
+/*
+* creates the master library from a file then creates the indexes
+*/
 void MedeaApp::initMasterLibrary()
 {
 	fstream inFile("Data/masterList.csv", ios::in);

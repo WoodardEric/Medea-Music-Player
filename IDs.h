@@ -1,3 +1,18 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  IDs.h
+
+ @brief:
+
+ holds all the tags that the different widgets, dialogs, and events use 
+ use throughout the program
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ //TODO fix prev and next on looping
+ **********************************************************************/
 #ifndef IDS_H
 #define IDS_H
 
@@ -34,6 +49,8 @@ enum MusicPlayerIDs
     ID_MOVE,
     ID_PICK,
     ID_QUEUE,
+
+    //list ids
     ListboxPage_Add,
     ListboxPage_AddText,
     ListboxPage_AddSeveral,

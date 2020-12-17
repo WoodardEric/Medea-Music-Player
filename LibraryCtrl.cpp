@@ -36,7 +36,7 @@ LibraryCtrl::LibraryCtrl(wxWindow *parent, wxWindowID id)
 	wxListItem col2;
 	col2.SetId(2);
 	col2.SetText(_("Album"));
-	col2.SetWidth(100);
+	col2.SetWidth(125);
 	InsertColumn(2, col2);
 
 	wxListItem col3;
@@ -51,11 +51,11 @@ LibraryCtrl::LibraryCtrl(wxWindow *parent, wxWindowID id)
 	col4.SetWidth(100);
 	InsertColumn(4, col4);
 
-	/*wxListItem col4;
-	col4.SetId(4);
-	col4.SetText(_("Time"));
-	col4.SetWidth(50);
-	InsertColumn(4, col4);*/
+	wxListItem col5;
+	col5.SetId(5);
+	col5.SetText(_("Time"));
+	col5.SetWidth(75);
+	InsertColumn(5, col5);
 
 }
 
@@ -76,7 +76,7 @@ void LibraryCtrl::addList(const vector<Track> &vec, const bool reversed)
 			SetItem(itemIndex, 2, vec[i].album);
 			SetItem(itemIndex, 3, vec[i].artist);
 			SetItem(itemIndex, 4, vec[i].genre);
-			//SetItem(itemIndex, 4, vec[i].length);
+			SetItem(itemIndex, 5, vec[i].lengthToString());
 		}
 	}
 	else
@@ -89,7 +89,7 @@ void LibraryCtrl::addList(const vector<Track> &vec, const bool reversed)
 			SetItem(itemIndex, 2, vec[i].album);
 			SetItem(itemIndex, 3, vec[i].artist);
 			SetItem(itemIndex, 4, vec[i].genre);
-			//SetItem(itemIndex, 4, vec[i].length);
+			SetItem(itemIndex, 5, vec[i].lengthToString());
 		}
 	}
 }
@@ -111,7 +111,7 @@ void LibraryCtrl::addList(const vector<Track*> &vec, const bool reversed)
 			SetItem(itemIndex, 2, vec[i]->album);
 			SetItem(itemIndex, 3, vec[i]->artist);
 			SetItem(itemIndex, 4, vec[i]->genre);
-			//SetItem(itemIndex, 4, vec[i]->length);
+			SetItem(itemIndex, 5, vec[i]->lengthToString());
 		}
 	}
 	else
@@ -124,7 +124,7 @@ void LibraryCtrl::addList(const vector<Track*> &vec, const bool reversed)
 			SetItem(itemIndex, 2, vec[i]->album);
 			SetItem(itemIndex, 3, vec[i]->artist);
 			SetItem(itemIndex, 4, vec[i]->genre);
-			//SetItem(itemIndex, 4, vec[i]->length);
+			SetItem(itemIndex, 5, vec[i]->lengthToString());
 		}
 	}
 }

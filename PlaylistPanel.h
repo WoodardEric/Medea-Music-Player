@@ -35,8 +35,12 @@ public:
 	void appendTrack(Track *track);
 	void removeTrack(long index);
 
+	void focusTrack(const Track *currTrack, const Track *nextTrack);
+	void focusTrack(const Track *track);
+
 	void saveCurrPlaylist(string path);
 	void clearPlaylist();
+	
 	
 private:
 	long mFirstIndex; //index of track node that user selects to move.
