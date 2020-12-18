@@ -26,11 +26,11 @@ https://github.com/PortAudio/portaudio
 http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html
 skip step 3 and do step 4
 
-In step 7
-Do
+In step 7 
+Do:
 C/C++ -> Optimization -> Omit frame pointers = Yes
 
-skip
+skip:
 Optional: C/C++ -> Code Generation -> Floating point model = fast
 
 In step 9 use:
