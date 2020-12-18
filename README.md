@@ -51,7 +51,7 @@ Skip the "Building without ASIO support" section
 6) Add a system environment variable named PORTAUDIO 
 that points to the directy where you cloned portaudio
 
-This step is similar to in the video on building wxWidgets
+This step is similar to the video on building wxWidgets
 But this guide also goes through environment variables
 https://www.computerhope.com/issues/ch000549.htm
 
