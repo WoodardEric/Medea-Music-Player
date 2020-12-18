@@ -1,5 +1,5 @@
 # Medea-Music-Player
-Simple wav player(for now)<br/>
+A simple wav player(for now)<br/><br/>
 Made using wxWidgets and portaudio libraries<br/><br/>
 Thanks to icon king1 for the icons<br/>
 From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
