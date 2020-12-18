@@ -26,18 +26,18 @@ https://github.com/PortAudio/portaudio
 http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html
 skip step 3 and do step 4
 
-In step 7 
-Do:
+In step 7 <br/>
+Do:<br/>
 C/C++ -> Optimization -> Omit frame pointers = Yes
 
-skip:
+skip:<br/>
 Optional: C/C++ -> Code Generation -> Floating point model = fast
 
 In step 9 use:
-PA_USE_ASIO
-PA_USE_DS (DirectSound)
-PA_USE_WMME (MME)
-PA_USE_WASAPI
+PA_USE_ASIO<br/>
+PA_USE_DS (DirectSound)<br/>
+PA_USE_WMME (MME)<br/>
+PA_USE_WASAPI<br/>
 
 In step 10 you only need to build for x64
 Skip the "Building without ASIO support" section
