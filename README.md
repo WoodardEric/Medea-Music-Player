@@ -8,13 +8,13 @@ From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
 For now can only build on windows with visual studio 2019.<br/>
 *Make sure to read the notes after each step before following the guides*<br/><br/>
 
-1) Download and install visual sudio 2019
+1) Download and install visual sudio 2019<br/>
 https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-160
 
-2) clone wxWidgets to your pc
+2) clone wxWidgets to your pc<br/>
 https://github.com/wxWidgets/wxWidgets
 
-3) Build wxWidgets by following this video
+3) Build wxWidgets by following this video<br/>
 https://www.youtube.com/watch?v=sRhoZcNpMb4
 
 note: we only need the x64 debug and release. 
@@ -24,11 +24,11 @@ Then do this again but change the Debug box to Release.
 
 Also: Make sure to set up the environment variable how he shows in the video.
 
-4) clone portaudio
+4) clone portaudio<br/>
 https://github.com/PortAudio/portaudio
 
-5) Follow his guide to build
-http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html
+5) Follow his guide to build<br/>
+http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html<br/>
 skip step 3 and do step 4
 
 In step 7 <br/>
