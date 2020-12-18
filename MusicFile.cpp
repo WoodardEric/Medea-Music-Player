@@ -19,7 +19,7 @@
 * @param path loction of the file on the computrer
 */
 MusicFile::MusicFile(string path)
-	: fileStream(path, ios::in | ios::binary), header(fileStream)
+	
 {
 	//fileStream.open(path, ios::in | ios::binary);
 }
@@ -36,7 +36,7 @@ MusicFile::~MusicFile()
 * @param buffer audio sample buffer that is passed to the audio stream
 * @param bufferSize the size of the buffer array
 */
-void MusicFile::readSample(void *buffer[], int bufferSize)
+void MusicFile::readSample(void *buffer, int bufferSize)
 {
 	if (header.bitsPerSample == 16)
 	{

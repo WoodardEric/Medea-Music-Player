@@ -31,7 +31,7 @@ AudioManager::AudioManager()
 	parameters.hostApiSpecificStreamInfo = NULL;
 
 	mBufferSize = (mFramesPerBuffer * numChannels);
-	buffer = new void*[mBufferSize];	
+	buffer = malloc(sizeof(uint16_t) * mBufferSize);
 }
 
 /*
@@ -109,33 +109,23 @@ void AudioManager::setParameters(const int numChannels, const int bitsPerSample)
 {
 	parameters.channelCount = numChannels;
 	
-		if (bitsPerSample == 16)
-		{
-			parameters.sampleFormat = paInt16;
-		}
-		else if (bitsPerSample == 8)
-		{
-			parameters.sampleFormat = paUInt8;
-		}
-		else if (bitsPerSample == 32)
-		{
-			parameters.sampleFormat = paInt32;
-		}
-		else
-		{
-			//error code
-		}
-	//}
-	//else if (header->audioFormat == 3)
-	//{
-	//	if (header->bitsPerSample == 32)
-	//	{
-	//		parameters.sampleFormat = paFloat32;
-	//	}
-	//	else
-	//	{
-	//		//error code
-	//	}
+	if (bitsPerSample == 16)
+	{
+		parameters.sampleFormat = paInt16;
+	}
+	else if (bitsPerSample == 8)
+	{
+		parameters.sampleFormat = paUInt8;
+	}
+	else if (bitsPerSample == 32)
+	{
+		parameters.sampleFormat = paInt32;
+	}
+	else //unsuported sample format
+	{
+		err = paSampleFormatNotSupported;
+	}
+	
 }
 /*
 * turns the error code into human readable text
@@ -151,9 +141,10 @@ string AudioManager::getErrorMessage() const
 */
 void AudioManager::clearBuffer()
 {
+	int16_t *p = static_cast<int16_t *>(buffer);
 	for (int i = 0; i < mBufferSize; ++i)
 	{
-		buffer[i] = 0;
+		p[i] = 0;
 	}
 }
 /*
@@ -191,17 +182,18 @@ bool AudioManager::playAudio(MusicFile *file)
 }
 /*
 * processes each sample in the buffer
-* currently only multiples a sample by the current volume
+* 
 */
 void AudioManager::processBuffer()
 {
-	if (mVolume == 1.0)
+	if (mVolume == 1.0f)
 	{
 		return;
 	}
+	int16_t *p = static_cast<int16_t *>(buffer);
 	for (int i = 0; i < mBufferSize; ++i)
 	{
-		*static_cast<uint16_t*>(buffer[i]) *= mVolume;
+		p[i] *= mVolume;
 	}
 }
 

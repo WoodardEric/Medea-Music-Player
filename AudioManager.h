@@ -61,7 +61,7 @@ public:
 	//void applyEq(float highpass, float high, float low);
 	
 private:
-	void* *buffer;
+	void* buffer;
 	PaStream *audioStream;
 	PaError err;
 	PaStreamParameters parameters;

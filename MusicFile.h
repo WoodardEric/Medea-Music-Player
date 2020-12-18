@@ -93,9 +93,11 @@ struct AudioHeader
 class MusicFile
 {
 public:
-	MusicFile(string path);
+	MusicFile(string path) 
+		: fileStream(path, ios::in | ios::binary), header(fileStream) {}
 	~MusicFile();
-	void readSample(void* buffer[], int bufferSize);
+
+	void readSample(void* buffer, int bufferSize);
 
 	uint32_t getSampleRate()  const { return header.sampleRate; }
 	int getNumChannels() const { return header.numChannels; }
