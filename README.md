@@ -1,8 +1,12 @@
 # Medea-Music-Player
-Simple Music Manager
+A simple wav player(for now)<br/><br/>
+Made using wxWidgets and portaudio libraries<br/><br/>
+Thanks to icon king1 for the icons<br/>
+From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
 
+# Building
 For now can only build on windows with visual studio 2019.<br/>
-*Make sure to read the notes after each step before following the guides*<br/>
+*Make sure to read the notes after each step before following the guides*<br/><br/>
 
 1) Download and install visual sudio 2019
 https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-160
@@ -24,7 +28,8 @@ Also: Make sure to set up the environment variable how he shows in the video.
 https://github.com/PortAudio/portaudio
 
 5) Follow his guide to build
-http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html
+http://files.portaudio.com/docs/v19-doxydocs/compile_windows.html<br/>
+
 skip step 3 and do step 4
 
 In step 7 <br/>
@@ -46,7 +51,7 @@ Skip the "Building without ASIO support" section
 6) Add a system environment variable named PORTAUDIO 
 that points to the directy where you cloned portaudio
 
-This step is similar to in the video on building wxWidgets
+This step is similar to the video on building wxWidgets
 But this guide also goes through environment variables
 https://www.computerhope.com/issues/ch000549.htm
 
