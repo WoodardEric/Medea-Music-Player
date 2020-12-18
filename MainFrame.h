@@ -70,7 +70,6 @@ public:
 	void OnArtist(wxCommandEvent &event);
 
 	void OnPlay(wxCommandEvent &event);
-	void OnPause(wxCommandEvent &event);
 	void OnNext(wxCommandEvent &event);
 	void OnPrev(wxCommandEvent &event);
 	

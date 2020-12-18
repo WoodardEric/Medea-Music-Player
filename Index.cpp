@@ -5,7 +5,6 @@
  * @author Eric Woodard
  * @date   09/09/2020
  * 
- * TODO: update sorting to quick sort
  */
 #include "index.h"
  /**
@@ -72,7 +71,6 @@ void sortByAlbum(vector<Track *> &index)
         }
         index[minIndex] = index[startscan];
         index[startscan] = minValue;
-
     }
 }
 

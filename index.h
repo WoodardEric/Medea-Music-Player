@@ -1,3 +1,19 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  index.h
+
+ @brief:
+
+sorts and seraches the music track vecotrs.
+
+ @author Eric Woodard
+ @date   12/11/2020
+
+ //TODO: 
+ won't let me change the name to Index.h
+ Convert sorting to quicksort
+ **********************************************************************/
 #ifndef INDEX_H
 #define INDEX_H
 

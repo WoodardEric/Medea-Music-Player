@@ -223,14 +223,14 @@ void MainFrame::setCurrTrack(Node *track)
 		currTrackPTR = track;
 		delete mFile;
 		mFile = new MusicFile(currTrackPTR->track->path);
+
 		audio->resetCounter();
 		audio->openStream(mFile->getNumChannels(), mFile->getBitsPerSample(), mFile->getSampleRate());
 		audio->startStream();
+
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
 		timeSlider->SetRange(0, mFile->getDataSize());
 		misPlaying = true;
-		
-
 	}
 	else
 	{
@@ -385,9 +385,6 @@ void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 	}
 }
 
-void MainFrame::OnPause(wxCommandEvent &WXUNUSED(event))
-{
-}
 /*
 * called when next menu clicked
 * calls currTrack to the next node in the playlist

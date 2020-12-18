@@ -11,7 +11,6 @@
  @author Eric Woodard
  @date   12/11/2020
 
- //TODO fix prev and next on looping
  **********************************************************************/
 #ifndef IDS_H
 #define IDS_H
