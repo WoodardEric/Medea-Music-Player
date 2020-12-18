@@ -4,8 +4,9 @@ Made using wxWidgets and portaudio libraries<br/><br/>
 Thanks to icon king1 for the icons<br/>
 From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
 
+# Building
 For now can only build on windows with visual studio 2019.<br/>
-*Make sure to read the notes after each step before following the guides*<br/>
+*Make sure to read the notes after each step before following the guides*<br/><br/>
 
 1) Download and install visual sudio 2019
 https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-160
