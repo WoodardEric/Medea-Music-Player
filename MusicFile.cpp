@@ -14,16 +14,6 @@
 #include "MusicFile.h"
 
 /*
-* MusicFile constructor
-* 
-* @param path loction of the file on the computrer
-*/
-MusicFile::MusicFile(string path)
-	
-{
-	//fileStream.open(path, ios::in | ios::binary);
-}
-/*
 * MusicFile dedstructor, closes file stream
 */
 MusicFile::~MusicFile()
