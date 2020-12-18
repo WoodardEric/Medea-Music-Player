@@ -33,7 +33,7 @@ C/C++ -> Optimization -> Omit frame pointers = Yes
 skip:<br/>
 Optional: C/C++ -> Code Generation -> Floating point model = fast
 
-In step 9 use:
+In step 9 use:<br/>
 PA_USE_ASIO<br/>
 PA_USE_DS (DirectSound)<br/>
 PA_USE_WMME (MME)<br/>
