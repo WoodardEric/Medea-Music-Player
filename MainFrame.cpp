@@ -58,9 +58,19 @@ MainFrame::MainFrame(wxSize size,
 
 	timer = new wxTimer(this, 1);
 	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
-	timer->Start(1);
+	
+	timer->Start(10);
+	
 }
-
+void MainFrame::setThread(string path)
+{
+	mThread = new AudioThread(path, volSlider, timeSlider);
+	if (mThread->Create() != wxTHREAD_NO_ERROR)
+	{
+		wxMessageBox(wxT("Can't create thread"));
+	}
+	mThread->Run();
+}
 /*
 * default destructor
 */
@@ -204,13 +214,11 @@ void MainFrame::setCurrTrack(Node *track)
 {
 	if (isTrackLoop())
 	{
-		mFile->seek(0);
-		audio->resetCounter();
+		setThread(currTrackPTR->track->path);
 	}
 	else if (track != nullptr)
 	{
-		audio->clearBuffer();
-		audio->stopStream();
+		
 		if (currTrackPTR != nullptr)
 		{
 			mPlaylistPanel->focusTrack(currTrackPTR->track, track->track);
@@ -221,20 +229,18 @@ void MainFrame::setCurrTrack(Node *track)
 		}
 
 		currTrackPTR = track;
-		delete mFile;
-		mFile = new MusicFile(currTrackPTR->track->path);
-
-		audio->resetCounter();
-		audio->openStream(mFile->getNumChannels(), mFile->getBitsPerSample(), mFile->getSampleRate());
-		audio->startStream();
+		
+		if (mThread == nullptr)
+		{
+			setThread(currTrackPTR->track->path);
+		}
+		else
+		{
+			mThread->setPath(currTrackPTR->track->path);
+		}
 
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
-		timeSlider->SetRange(0, mFile->getDataSize());
 		misPlaying = true;
-	}
-	else
-	{
-		audio->stopStream();
 	}
 }
 /*
@@ -246,34 +252,36 @@ void MainFrame::setCurrTrack(Node *track)
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
 	//TODO check if there is a activated track or playlist is empty
-	if (misPlaying)
+	long max = timeSlider->GetMax();
+	long curr = timeSlider->GetValue();
+	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
+	if (mThread != nullptr)
 	{
-		//True if audio data was successfully passed to the audio stream
-		bool success = audio->playAudio(mFile);
-		if (!success)
+		if (max - curr <= 1024 * 3)
 		{
-			if (audio->getErr() != 0) //unrecoverable error (TODO handle more errors)
-			{
-				timer->Stop();
-				wxMessageBox(audio->getErrorMessage());
-				audio->Terminate();
-				Close(true);
-			}
-			else //end of track reached
-			{
-				if (currTrackPTR != nullptr)
-				{
-					setCurrTrack(currTrackPTR->next);
-				}
-			}
+			setCurrTrack(currTrackPTR->next);
 		}
 		else //update time slider and status
 		{
-			string time = mFile->timeToString(audio->getCounter());
-			timeSlider->SetValue(audio->getCounter() * 4);
-			statusBar->SetStatusText(time, 2);
+			long bytes = timeSlider->GetValue();
+
+			int n = bytes / (44100 * 2 * 16 / 8);
+			int min = n / 60;
+			n = n % 60;
+			int sec = n;
+			std::ostringstream stream;
+			std::string trackTime;
+
+			stream << min << ':';
+			if (sec < 10)
+				stream << 0 << sec;
+			else
+				stream << sec;
+
+			statusBar->SetStatusText(stream.str(), 2);
 		}
 	}
+	
 }
 /*
 * called when exit menu clicked
@@ -504,24 +512,27 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 */
 void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
-	audio->stopStream();
+	//audio->stopStream();
 
 	//taken from https://wiki.wxwidgets.org/WxSlider_step_intervals
 	int val = timeSlider->GetValue();
 
 	int remainder = val % audio->getFramesPerBuffer(); // The step interval.
 
-	// If the value is not evenly divisible by the step interval,
-	// snap the value to an even interval.
+	 //If the value is not evenly divisible by the step interval,
+	 //snap the value to an even interval.
 	if (remainder != 0) {
 		val -= remainder;
 		timeSlider->SetValue(val);
 	}
 
-	audio->setCounter(timeSlider->GetValue() / 4);
-	mFile->seek(timeSlider->GetValue());
-	audio->clearBuffer();
-	audio->startStream();
+	//audio->setCounter(timeSlider->GetValue() / 4);
+	//mFile->seek(timeSlider->GetValue());
+	//audio->clearBuffer();
+	//audio->startStream();
+
+	//string time = mFile->timeToString(audio->getCounter());
+	//statusBar->SetStatusText(time, 2);
 }
 /*
 * loads a playlist from a file

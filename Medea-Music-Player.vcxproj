@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="AudioThread.cpp" />
     <ClCompile Include="Index.cpp" />
     <ClCompile Include="LibraryCtrl.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="PlaylistPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioThread.h" />
     <ClInclude Include="IDs.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="LibraryCtrl.h" />

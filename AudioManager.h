@@ -26,6 +26,7 @@ class AudioManager
 {
 public:
 	AudioManager();
+	AudioManager(const MusicFile &file);
 	~AudioManager();
 
 	//stream controls
@@ -61,7 +62,7 @@ public:
 	//void applyEq(float highpass, float high, float low);
 	
 private:
-	void* buffer;
+	void* buffer;	
 	PaStream *audioStream;
 	PaError err;
 	PaStreamParameters parameters;
@@ -70,7 +71,6 @@ private:
 	int mBufferSize;
 	float mVolume;
 	long mFrameCounter;
-	
 	
 };
 

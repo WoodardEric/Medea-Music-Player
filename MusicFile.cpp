@@ -30,11 +30,11 @@ void MusicFile::readSample(void *buffer, int bufferSize)
 {
 	if (header.bitsPerSample == 16)
 	{
-		fileStream.read(reinterpret_cast<char *>(buffer), sizeof(uint16_t) * bufferSize);
+		fileStream.read(reinterpret_cast<char *>(buffer), sizeof(int16_t) * bufferSize);
 	}
 	else if (header.bitsPerSample == 32)
 	{
-		fileStream.read(reinterpret_cast<char *>(buffer), sizeof(uint32_t) * bufferSize);
+		fileStream.read(reinterpret_cast<char *>(buffer), sizeof(int32_t) * bufferSize);
 	}
 	else if (header.bitsPerSample == 8)
 	{

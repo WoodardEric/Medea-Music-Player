@@ -25,6 +25,8 @@
 #include "MusicFile.h"
 #include "PlaylistPanel.h"
 
+#include "AudioThread.h"
+
 #include "portaudio.h"
 #include <wx/wx.h>
 #include <wx/button.h>
@@ -100,6 +102,7 @@ public:
 	void saveMasterList();
 
 	PlaylistPanel* getPlaylistPanel() { return mPlaylistPanel; }
+	void setThread(string path);
 
 private:
 	wxTimer *timer;
@@ -133,6 +136,8 @@ private:
 	bool loopTrack;
 	bool misPlaying;
 	string mLibraryPath;
+
+	AudioThread *mThread;
 };
 
 void advanceToNextTag(fstream &inFile);
