@@ -1,5 +1,8 @@
 # Medea-Music-Player
-Simple Music Manager
+Simple wav player(for now)<br/>
+Made using wxWidgets and portaudio libraries<br/><br/>
+Thanks to icon king1 for the icons<br/>
+From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
 
 For now can only build on windows with visual studio 2019.<br/>
 *Make sure to read the notes after each step before following the guides*<br/>
