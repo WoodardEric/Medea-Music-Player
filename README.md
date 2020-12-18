@@ -1,7 +1,8 @@
 # Medea-Music-Player
 Simple Music Manager
 
-For now can only build on windows with visual studio 2019
+For now can only build on windows with visual studio 2019<br/>
+*Make sure to read the notes after each step before following the guides<br/>
 
 1) Download and install visual sudio 2019
 https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-160
