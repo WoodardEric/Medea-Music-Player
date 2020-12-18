@@ -31,7 +31,7 @@ AudioManager::AudioManager()
 	parameters.hostApiSpecificStreamInfo = NULL;
 
 	mBufferSize = (mFramesPerBuffer * numChannels);
-	buffer = malloc(sizeof(uint16_t) * mBufferSize);
+	buffer = new void *[mBufferSize];
 }
 
 /*
