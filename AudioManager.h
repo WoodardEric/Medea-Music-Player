@@ -18,7 +18,7 @@
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
 
-#include "MusicFile.h"
+#include "AudioFile.h"
 #include "portaudio.h"
 #include <stdio.h>
 
