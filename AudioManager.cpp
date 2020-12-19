@@ -175,19 +175,22 @@ bool AudioManager::playAudio(MusicFile *file)
 	{
 		return false;
 	}
-	file->readSample(buffer, mBufferSize);
+	/*file->readSample(buffer, mBufferSize);
 	processBuffer();
 	err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
-	increaseCounter();
-	return true;
-	if (file == nullptr)
+	increaseCounter();*/
+	//return true;
+	/*if (file == nullptr)
 	{
 		err = Pa_IsStreamActive(audioStream);
 		if (err == 0)
 			stopStream();
 		return true;
-	}
-	if (file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3)
+	}*/
+	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
+	long max = file->getDataSize();
+	long curr = mFrameCounter * file->getBlockAlighn();
+	if (max - curr > mBufferSize * file->getBlockAlighn())
 	{
 		file->readSample(buffer, mBufferSize);
 		processBuffer();

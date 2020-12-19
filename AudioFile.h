@@ -1,7 +1,7 @@
 /**********************************************************************
  Medea: A Digital Music Player
 
- @file  MusicFile.h
+ @file  AudioFile.h
 
  @brief:
 

@@ -1,7 +1,7 @@
 /**********************************************************************
  Medea: A Digital Music Player
 
- @file  MusicFile.cpp
+ @file  AudioFile.cpp
 
  @brief:
 
@@ -11,7 +11,7 @@
  @date   12/11/2020
 
  **********************************************************************/
-#include "MusicFile.h"
+#include "AudioFile.h"
 
 /*
 * MusicFile dedstructor, closes file stream
