@@ -33,9 +33,6 @@ MainFrame::MainFrame(wxSize size,
 	mLibraryPath = "Data/"; 
 	misPlaying = false;
 
-	mFile = nullptr;
-	audio = new AudioManager();
-
 	//sets icon in top corner
 	SetIcon(wxICON(icon));
 	
@@ -64,7 +61,7 @@ MainFrame::MainFrame(wxSize size,
 }
 void MainFrame::setThread(string path)
 {
-	mThread = new AudioThread(path, volSlider, timeSlider);
+	mThread = new AudioThread(path, timeSlider);
 	if (mThread->Create() != wxTHREAD_NO_ERROR)
 	{
 		wxMessageBox(wxT("Can't create thread"));
@@ -78,8 +75,7 @@ MainFrame::~MainFrame()
 {
 	///It is important to stop the timer otherwise wxWidgets throws an exception
 	timer->Stop();
-	delete mFile;
-	delete audio;
+	
 }
 
 /*initializes menu items and events*/
@@ -237,10 +233,14 @@ void MainFrame::setCurrTrack(Node *track)
 		else
 		{
 			mThread->setPath(currTrackPTR->track->path);
+			timeSlider->SetValue(0);
 		}
 
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
-		misPlaying = true;
+		if (!misPlaying)
+		{
+			toggleisPlaying();
+		}
 	}
 }
 /*
@@ -257,12 +257,15 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
 	if (mThread != nullptr)
 	{
-		if (max - curr <= 1024 * 3)
+		if (max - curr <= 2048 * 4)
 		{
+			mThread->Pause();
 			setCurrTrack(currTrackPTR->next);
+			mThread->Resume();
 		}
 		else //update time slider and status
 		{
+			timeSlider->SetValue(mThread->getCounter() * 4);
 			long bytes = timeSlider->GetValue();
 
 			int n = bytes / (44100 * 2 * 16 / 8);
@@ -370,6 +373,22 @@ void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 	mLibraryPanel->toggleByArtist();
 	mLibraryPanel->recreateList();
 }
+void MainFrame::toggleisPlaying()
+{
+	if (currTrackPTR == nullptr)
+	{
+		return;
+	}
+	misPlaying = !misPlaying;
+	if (!misPlaying)
+	{
+		mThread->Pause();
+	}
+	else
+	{
+		mThread->Resume();
+	}
+}
 /*
 * called when play menu clicked
 * Toggles the audio stream to start/stop
@@ -378,19 +397,7 @@ void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 */
 void MainFrame::OnPlay(wxCommandEvent &WXUNUSED(event))
 {
-	if (currTrackPTR == nullptr)
-	{
-		return;
-	}
-	misPlaying = !misPlaying;
-	if (!audio->isStreaming())
-	{
-		audio->startStream();
-	}
-	else
-	{
-		audio->stopStream();
-	}
+	toggleisPlaying();
 }
 
 /*
@@ -502,7 +509,7 @@ void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 */
 void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 {
-	audio->setVolume(volSlider->GetValue() / 100.0f);
+	mThread->setVolume(volSlider->GetValue() / 100.0f);
 }
 /*
 * called when timer slider moved
@@ -512,27 +519,20 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 */
 void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
 {
-	//audio->stopStream();
-
 	//taken from https://wiki.wxwidgets.org/WxSlider_step_intervals
 	int val = timeSlider->GetValue();
 
-	int remainder = val % audio->getFramesPerBuffer(); // The step interval.
+	int remainder = val % 2048; // The step interval.
 
 	 //If the value is not evenly divisible by the step interval,
 	 //snap the value to an even interval.
-	if (remainder != 0) {
+	if (remainder != 0) 
+	{
 		val -= remainder;
 		timeSlider->SetValue(val);
 	}
-
-	//audio->setCounter(timeSlider->GetValue() / 4);
-	//mFile->seek(timeSlider->GetValue());
-	//audio->clearBuffer();
-	//audio->startStream();
-
-	//string time = mFile->timeToString(audio->getCounter());
-	//statusBar->SetStatusText(time, 2);
+	
+	mThread->setFilePos(val);
 }
 /*
 * loads a playlist from a file

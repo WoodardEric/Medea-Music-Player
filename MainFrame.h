@@ -22,7 +22,7 @@
 #include "IDs.h"
 #include "index.h"
 #include "LibraryPanel.h"
-#include "MusicFile.h"
+#include "AudioFile.h"
 #include "PlaylistPanel.h"
 
 #include "AudioThread.h"
@@ -91,6 +91,7 @@ public:
 
 	void loadCurrPlayList (string path);
 	
+	void toggleisPlaying();
 	void toggleLoopTrack() {loopTrack = !loopTrack;}
 	bool isTrackLoop() {return loopTrack;}
 
@@ -128,8 +129,6 @@ private:
 	vector<Track*> *mAlbumIndex;
 	vector<Track*> *mArtistIndex;
 	
-	MusicFile *mFile;
-	AudioManager *audio;
 	Node *currTrackPTR;
 
 	bool loopAll;
