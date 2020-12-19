@@ -1,31 +1,30 @@
 #include "AudioThread.h"
 
-AudioThread::AudioThread(string path, const wxSlider *volSlider, wxSlider *timeSlider)
-	: mPath(path), mVolSlider(volSlider), mTimeSlider(timeSlider)
+AudioThread::AudioThread(string path, wxSlider *timeSlider)
+	: mPath(path), mTimeSlider(timeSlider)
 {
 	mNewPath = mPath;
 	mFile = new MusicFile(mPath);
 	mAudio = new AudioManager(*mFile);
+	filePos = -1;
+	isPlaying = true;
 }
 void *AudioThread::Entry()
 {
 	mTimeSlider->SetMax(mFile->getDataSize());
-	long songPos = 0;
 	mAudio->startStream();
+
 	while (true)
 	{
-		while (mAudio->playAudio(mFile))
+		while (mAudio->playAudio(mFile) && !TestDestroy())
 		{
-			long timslPos = mTimeSlider->GetValue();
-			if (songPos != timslPos)
+			if (filePos != -1)
 			{
-				mFile->seek(mTimeSlider->GetValue());
+				mFile->seek(filePos);
 				mAudio->setCounter(mTimeSlider->GetValue() / 4);
+				filePos = -1;
 			}
 
-			mAudio->setVolume(mVolSlider->GetValue() / 100.0f);
-			mTimeSlider->SetValue(mAudio->getCounter() * 4);
-			songPos = mAudio->getCounter() * 4;
 			Sleep(5);
 			if (mPath != mNewPath)
 			{
@@ -38,6 +37,7 @@ void *AudioThread::Entry()
 		{
 			changeFile();
 		}
+		
 	}
 	return NULL;
 }
@@ -48,5 +48,7 @@ void AudioThread::changeFile()
 	delete mAudio;
 	mFile = new MusicFile(mPath);
 	mAudio = new AudioManager(*mFile);
+	mTimeSlider->SetMax(mFile->getDataSize());
+	mTimeSlider->SetValue(0);
 	mAudio->startStream();
 }
