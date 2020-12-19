@@ -232,8 +232,9 @@ void MainFrame::setCurrTrack(Node *track)
 		}
 		else
 		{
-			mThread->setPath(currTrackPTR->track->path);
-			timeSlider->SetValue(0);
+			mThread->Delete();
+			setThread(currTrackPTR->track->path);
+			//mThread->setPath(currTrackPTR->track->path);
 		}
 
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
@@ -257,11 +258,9 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
 	if (mThread != nullptr)
 	{
-		if (max - curr <= 2048 * 4)
+		if (mThread->isOver())
 		{
-			mThread->Pause();
 			setCurrTrack(currTrackPTR->next);
-			mThread->Resume();
 		}
 		else //update time slider and status
 		{
@@ -549,7 +548,6 @@ void MainFrame::loadCurrPlayList(string path)
 	}
 	wxString str = dialog.GetPath();
 	string filePath = string(str.mb_str());
-	//mLibraryPanel->loadPlayListFromFile(filePath);
 
 	mPlaylistPanel->clearPlaylist();
 	ifstream inFile(filePath);

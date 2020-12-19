@@ -7,16 +7,16 @@ AudioThread::AudioThread(string path, wxSlider *timeSlider)
 	mFile = new MusicFile(mPath);
 	mAudio = new AudioManager(*mFile);
 	filePos = -1;
-	isPlaying = true;
+	over = false;
 }
 void *AudioThread::Entry()
 {
 	mTimeSlider->SetMax(mFile->getDataSize());
 	mAudio->startStream();
 
-	while (true)
+	while (!TestDestroy())
 	{
-		while (mAudio->playAudio(mFile) && !TestDestroy())
+		while (!TestDestroy() && mAudio->playAudio(mFile))
 		{
 			if (filePos != -1)
 			{
@@ -26,17 +26,18 @@ void *AudioThread::Entry()
 			}
 
 			Sleep(5);
-			if (mPath != mNewPath)
+			/*if (mPath != mNewPath)
 			{
 				changeFile();
-			}
+			}*/
 		}
 
-		Sleep(40);
-		if (mPath != mNewPath)
+		over = true;
+		Sleep(10);
+		/*if (mPath != mNewPath)
 		{
 			changeFile();
-		}
+		}*/
 		
 	}
 	return NULL;
@@ -48,7 +49,8 @@ void AudioThread::changeFile()
 	delete mAudio;
 	mFile = new MusicFile(mPath);
 	mAudio = new AudioManager(*mFile);
-	mTimeSlider->SetMax(mFile->getDataSize());
 	mTimeSlider->SetValue(0);
+	mTimeSlider->SetMax(mFile->getDataSize());
+	over = false;
 	mAudio->startStream();
 }

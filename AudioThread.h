@@ -20,7 +20,7 @@ public:
 	void setVolume(float vol) { mAudio->setVolume(vol); }
 	long getCounter() const { return mAudio->getCounter(); }
 	void setFilePos(long bytes) { filePos = bytes; }
-	//bool getisPlaying
+	bool isOver() const { return over; }
 private:
 	void changeFile();
 	string mPath;
@@ -30,7 +30,8 @@ private:
 	MusicFile *mFile;
 	AudioManager *mAudio;
 	long filePos;
-	bool isPlaying;
+	
+	bool over;
 };
 
 #endif
