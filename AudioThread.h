@@ -16,22 +16,24 @@ class AudioThread : public wxThread
 public:
 	AudioThread(string path, wxSlider *timeSlider);
 	virtual void *Entry();
-	void setPath(string path) { mNewPath = path; }
+	//void setPath(string path) { mNewPath = path; }
 	void setVolume(float vol) { mAudio->setVolume(vol); }
 	long getCounter() const { return mAudio->getCounter(); }
-	void setFilePos(long bytes) { filePos = bytes; }
-	bool isOver() const { return over; }
+	void setCounter(long bytes) { mAudio->setCounter(mTimeSlider->GetValue() / 4); }
+	void setFilePos(long bytes) { mfileUpdatePos = bytes; }
+	bool isOver() const { return mIsOver; }
+
 private:
-	void changeFile();
-	string mPath;
-	string mNewPath;
-	
 	wxSlider *mTimeSlider;
 	MusicFile *mFile;
 	AudioManager *mAudio;
-	long filePos;
-	
-	bool over;
+
+	string mPath; //current file
+	//string mNewPath; //path to new file
+	long mfileUpdatePos; //location of bytes file should seek to
+	bool mIsOver; //true if end if audio data reached in file
+
+	//void changeFile();
 };
 
 #endif

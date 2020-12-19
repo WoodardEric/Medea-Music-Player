@@ -32,7 +32,8 @@ MainFrame::MainFrame(wxSize size,
 	mArtistIndex = &artistIndex;
 	mLibraryPath = "Data/"; 
 	misPlaying = false;
-
+	SliderRealesed = false;
+	SliderRealesed2 = false;
 	//sets icon in top corner
 	SetIcon(wxICON(icon));
 	
@@ -191,7 +192,8 @@ void MainFrame::initToolBar()
 	//Bind all tool bar events
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
-	Bind(wxEVT_COMMAND_SCROLLBAR_UPDATED, &MainFrame::OnTimeSlider, this, ID_VOL_SLIDER);
+	Bind(wxEVT_SCROLL_THUMBRELEASE, &MainFrame::OnTimeSliderFinish, this, ID_TIME_SLIDER);
+	//Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::OnTimeSliderScroll, this, ID_TIME_SLIDER);
 	
 	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPlay, this,
 		ID_PLAY);
@@ -214,7 +216,6 @@ void MainFrame::setCurrTrack(Node *track)
 	}
 	else if (track != nullptr)
 	{
-		
 		if (currTrackPTR != nullptr)
 		{
 			mPlaylistPanel->focusTrack(currTrackPTR->track, track->track);
@@ -234,7 +235,6 @@ void MainFrame::setCurrTrack(Node *track)
 		{
 			mThread->Delete();
 			setThread(currTrackPTR->track->path);
-			//mThread->setPath(currTrackPTR->track->path);
 		}
 
 		statusBar->SetStatusText(currTrackPTR->track->title, 1);
@@ -252,11 +252,10 @@ void MainFrame::setCurrTrack(Node *track)
 */
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
+	
 	//TODO check if there is a activated track or playlist is empty
-	long max = timeSlider->GetMax();
-	long curr = timeSlider->GetValue();
-	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
-	if (mThread != nullptr)
+	
+	if (mThread != nullptr && !mThread->IsPaused())
 	{
 		if (mThread->isOver())
 		{
@@ -511,27 +510,61 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 	mThread->setVolume(volSlider->GetValue() / 100.0f);
 }
 /*
-* called when timer slider moved
-* seeks throug the audio file
+* called when timer slider moves
+* seeks through the audio file
+*
+* @Note Calls funtion additional two times once slider stop moving
 *
 * @param event unused for backwards compatibility
+* 
+* TODO: skip event after slider thumb release
 */
-void MainFrame::OnTimeSlider(wxCommandEvent &WXUNUSED(event))
+void MainFrame::OnTimeSlider(wxCommandEvent &event)
 {
-	//taken from https://wiki.wxwidgets.org/WxSlider_step_intervals
-	int val = timeSlider->GetValue();
-
-	int remainder = val % 2048; // The step interval.
-
-	 //If the value is not evenly divisible by the step interval,
-	 //snap the value to an even interval.
-	if (remainder != 0) 
+	if (!SliderRealesed)
 	{
-		val -= remainder;
-		timeSlider->SetValue(val);
+		timer->Stop();
+		if(!mThread->IsPaused())
+		mThread->Pause();
 	}
-	
-	mThread->setFilePos(val);
+		//TAKEN FROM HTTPS://WIKI.WXWIDGETS.ORG/WXSLIDER_STEP_INTERVALS
+		int val = timeSlider->GetValue();
+
+		int remainder = val % 2048; // THE STEP INTERVAL.
+
+		//IF THE VALUE IS NOT EVENLY DIVISIBLE BY THE STEP INTERVAL,
+		//SNAP THE VALUE TO AN EVEN INTERVAL.
+		if (remainder != 0)
+		{
+			val -= remainder;
+			//timeslider->setvalue(val);
+		}
+
+		mThread->setFilePos(val);
+
+	//After the slider thumb release OnTimeSlider is called two more times
+	//this hack makes sure the thread isn't paused in those calls.
+	if(SliderRealesed)
+	{
+		if(SliderRealesed2)
+			SliderRealesed2 = false;
+		else
+			SliderRealesed = false;
+	}
+}
+/*
+* called when timer slider finishes moving
+* resumes the timer and audio thread
+*
+* @param event unused
+*
+*/
+void MainFrame::OnTimeSliderFinish(wxScrollEvent &WXUNUSED(event))
+{
+	SliderRealesed2 = true;
+	SliderRealesed = true;
+	mThread->Resume();
+	timer->Start(-1);
 }
 /*
 * loads a playlist from a file

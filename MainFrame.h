@@ -86,7 +86,8 @@ public:
 
 	void OnSlider(wxCommandEvent &event);
 	void OnTimeSlider(wxCommandEvent &event);
-
+	//void OnTimeSliderScroll(wxScrollEvent &event);
+	void OnTimeSliderFinish(wxScrollEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
 	void loadCurrPlayList (string path);
@@ -137,6 +138,8 @@ private:
 	string mLibraryPath;
 
 	AudioThread *mThread;
+	bool SliderRealesed;
+	bool SliderRealesed2;
 };
 
 void advanceToNextTag(fstream &inFile);

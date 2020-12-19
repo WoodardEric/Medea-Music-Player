@@ -1,14 +1,24 @@
 #include "AudioThread.h"
-
+/*
+* Audio Thread constructor
+* 
+* @param path the file location on the computer
+* @param timeSlider pointer to timeSlider on main window
+*/
 AudioThread::AudioThread(string path, wxSlider *timeSlider)
 	: mPath(path), mTimeSlider(timeSlider)
 {
-	mNewPath = mPath;
+	//mNewPath = mPath;
 	mFile = new MusicFile(mPath);
 	mAudio = new AudioManager(*mFile);
-	filePos = -1;
-	over = false;
+	mfileUpdatePos = -1;
+	mIsOver = false;
 }
+/*
+* Threads point of entry. Loops reading a file and sending audio to stream
+* Lasts forever unless destoryed by main thread or the program ends
+* 
+*/
 void *AudioThread::Entry()
 {
 	mTimeSlider->SetMax(mFile->getDataSize());
@@ -16,41 +26,37 @@ void *AudioThread::Entry()
 
 	while (!TestDestroy())
 	{
-		while (!TestDestroy() && mAudio->playAudio(mFile))
+		while (mAudio->playAudio(mFile) && !TestDestroy())
 		{
-			if (filePos != -1)
+			
+			if (mfileUpdatePos != -1)
 			{
-				mFile->seek(filePos);
+				mFile->seek(mfileUpdatePos);
 				mAudio->setCounter(mTimeSlider->GetValue() / 4);
-				filePos = -1;
+				mfileUpdatePos = -1;
 			}
-
+			
 			Sleep(5);
-			/*if (mPath != mNewPath)
-			{
-				changeFile();
-			}*/
 		}
 
-		over = true;
-		Sleep(10);
-		/*if (mPath != mNewPath)
-		{
-			changeFile();
-		}*/
-		
+		mIsOver = true;
+		Sleep(10);		
 	}
 	return NULL;
 }
-void AudioThread::changeFile()
-{
-	mPath = mNewPath;
-	delete mFile;
-	delete mAudio;
-	mFile = new MusicFile(mPath);
-	mAudio = new AudioManager(*mFile);
-	mTimeSlider->SetValue(0);
-	mTimeSlider->SetMax(mFile->getDataSize());
-	over = false;
-	mAudio->startStream();
-}
+
+//found a better way to handle changing files
+//will remove once new aprouch is finalized 
+
+//void AudioThread::changeFile()
+//{
+//	mPath = mNewPath;
+//	delete mFile;
+//	delete mAudio;
+//	mFile = new MusicFile(mPath);
+//	mAudio = new AudioManager(*mFile);
+//	mTimeSlider->SetValue(0);
+//	mTimeSlider->SetMax(mFile->getDataSize());
+//	mIsOver = false;
+//	mAudio->startStream();
+//}
