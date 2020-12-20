@@ -20,23 +20,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="AudioThread.cpp" />
     <ClCompile Include="Index.cpp" />
     <ClCompile Include="LibraryCtrl.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainFrame.cpp" />
-    <ClCompile Include="MusicFile.cpp" />
+    <ClCompile Include="AudioFile.cpp" />
     <ClCompile Include="Playlist.cpp" />
     <ClCompile Include="PlayListCtrl.cpp" />
     <ClCompile Include="LibraryPanel.cpp" />
     <ClCompile Include="PlaylistPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioThread.h" />
     <ClInclude Include="IDs.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="LibraryCtrl.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="MainFrame.h" />
-    <ClInclude Include="MusicFile.h" />
+    <ClInclude Include="AudioFile.h" />
     <ClInclude Include="Playlist.h" />
     <ClInclude Include="PlayListCtrl.h" />
     <ClInclude Include="LibraryPanel.h" />

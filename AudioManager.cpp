@@ -31,7 +31,24 @@ AudioManager::AudioManager()
 	parameters.hostApiSpecificStreamInfo = NULL;
 
 	mBufferSize = (mFramesPerBuffer * numChannels);
-	buffer = new void *[mBufferSize];
+}
+
+AudioManager::AudioManager(const MusicFile &file)
+{
+	audioStream = nullptr;
+	mFrameCounter = 0;
+	mFramesPerBuffer = 1024;
+	err = Pa_Initialize();
+	parameters.device = Pa_GetDefaultOutputDevice();
+	deviceInfo = Pa_GetDeviceInfo(parameters.device);
+	mVolume = 1.0f;
+
+	parameters.suggestedLatency = deviceInfo->defaultHighOutputLatency;
+	parameters.hostApiSpecificStreamInfo = NULL;
+
+	mBufferSize = (mFramesPerBuffer * file.getNumChannels());
+	buffer = new void*[mBufferSize];
+	openStream(file.getNumChannels(), file.getBitsPerSample(), file.getSampleRate());
 }
 
 /*
@@ -141,7 +158,7 @@ string AudioManager::getErrorMessage() const
 */
 void AudioManager::clearBuffer()
 {
-	int16_t *p = static_cast<int16_t *>(buffer);
+	int16_t *p = static_cast<int16_t*>(buffer);
 	for (int i = 0; i < mBufferSize; ++i)
 	{
 		p[i] = 0;
@@ -158,14 +175,22 @@ bool AudioManager::playAudio(MusicFile *file)
 	{
 		return false;
 	}
-	if (file == nullptr)
+	/*file->readSample(buffer, mBufferSize);
+	processBuffer();
+	err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
+	increaseCounter();*/
+	//return true;
+	/*if (file == nullptr)
 	{
 		err = Pa_IsStreamActive(audioStream);
 		if (err == 0)
 			stopStream();
 		return true;
-	}
-	if (isStreaming() && file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3)
+	}*/
+	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
+	long max = file->getDataSize();
+	long curr = mFrameCounter * file->getBlockAlighn();
+	if (max - curr > mBufferSize * file->getBlockAlighn())
 	{
 		file->readSample(buffer, mBufferSize);
 		processBuffer();

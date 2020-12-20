@@ -18,7 +18,7 @@
 
 //ignores compile error about std function deprecation in wxWidgets' wxcrt.h
 #pragma warning(disable : 4996) 
-#include "MusicFile.h"
+#include "AudioFile.h"
 
 #include <sstream>
 #include <string>

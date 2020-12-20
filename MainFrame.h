@@ -22,8 +22,10 @@
 #include "IDs.h"
 #include "index.h"
 #include "LibraryPanel.h"
-#include "MusicFile.h"
+#include "AudioFile.h"
 #include "PlaylistPanel.h"
+
+#include "AudioThread.h"
 
 #include "portaudio.h"
 #include <wx/wx.h>
@@ -84,11 +86,13 @@ public:
 
 	void OnSlider(wxCommandEvent &event);
 	void OnTimeSlider(wxCommandEvent &event);
-
+	//void OnTimeSliderScroll(wxScrollEvent &event);
+	void OnTimeSliderFinish(wxScrollEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
 	void loadCurrPlayList (string path);
 	
+	void toggleisPlaying();
 	void toggleLoopTrack() {loopTrack = !loopTrack;}
 	bool isTrackLoop() {return loopTrack;}
 
@@ -100,6 +104,7 @@ public:
 	void saveMasterList();
 
 	PlaylistPanel* getPlaylistPanel() { return mPlaylistPanel; }
+	void setThread(string path);
 
 private:
 	wxTimer *timer;
@@ -125,14 +130,16 @@ private:
 	vector<Track*> *mAlbumIndex;
 	vector<Track*> *mArtistIndex;
 	
-	MusicFile *mFile;
-	AudioManager *audio;
 	Node *currTrackPTR;
 
 	bool loopAll;
 	bool loopTrack;
 	bool misPlaying;
 	string mLibraryPath;
+
+	AudioThread *mThread;
+	bool SliderRealesed;
+	bool SliderRealesed2;
 };
 
 void advanceToNextTag(fstream &inFile);
