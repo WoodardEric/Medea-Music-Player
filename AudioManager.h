@@ -11,9 +11,6 @@
  @author Eric Woodard
  @date   12/11/2020
 
- TODO: 
- *figure out best way to handle different sample sizes
- *Fix click at end of track
  **********************************************************************/
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
@@ -25,7 +22,6 @@
 class AudioManager
 {
 public:
-	AudioManager();
 	AudioManager(const MusicFile &file);
 	~AudioManager();
 
@@ -71,8 +67,7 @@ private:
 	int mBufferSize;
 	float mVolume;
 	long mFrameCounter;
-	
-};
 
+};
 
 #endif

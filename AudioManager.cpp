@@ -13,25 +13,6 @@
 
  **********************************************************************/
 #include "AudioManager.h"
-/*
-* Default AudioManager constructor
-*/
-AudioManager::AudioManager() 
-{
-	audioStream = nullptr;
-	short numChannels = 2;
-	mFrameCounter = 0;
-	mFramesPerBuffer = 1024;
-	err = Pa_Initialize();
-	parameters.device = Pa_GetDefaultOutputDevice();
-	deviceInfo = Pa_GetDeviceInfo(parameters.device);
-	mVolume = 1.0f;
-		
-	parameters.suggestedLatency = deviceInfo->defaultHighOutputLatency;
-	parameters.hostApiSpecificStreamInfo = NULL;
-
-	mBufferSize = (mFramesPerBuffer * numChannels);
-}
 
 AudioManager::AudioManager(const MusicFile &file)
 {
@@ -141,8 +122,7 @@ void AudioManager::setParameters(const int numChannels, const int bitsPerSample)
 	else //unsuported sample format
 	{
 		err = paSampleFormatNotSupported;
-	}
-	
+	}	
 }
 /*
 * turns the error code into human readable text
@@ -175,19 +155,7 @@ bool AudioManager::playAudio(MusicFile *file)
 	{
 		return false;
 	}
-	/*file->readSample(buffer, mBufferSize);
-	processBuffer();
-	err = Pa_WriteStream(audioStream, buffer, mFramesPerBuffer);
-	increaseCounter();*/
-	//return true;
-	/*if (file == nullptr)
-	{
-		err = Pa_IsStreamActive(audioStream);
-		if (err == 0)
-			stopStream();
-		return true;
-	}*/
-	//file->getDataSize() - (mFrameCounter * file->getBlockAlighn()) >= mFramesPerBuffer * 3
+
 	long max = file->getDataSize();
 	long curr = mFrameCounter * file->getBlockAlighn();
 	if (max - curr > mBufferSize * file->getBlockAlighn())
