@@ -282,7 +282,6 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 			statusBar->SetStatusText(stream.str(), 2);
 		}
 	}
-	
 }
 /*
 * called when exit menu clicked
@@ -563,7 +562,10 @@ void MainFrame::OnTimeSliderFinish(wxScrollEvent &WXUNUSED(event))
 {
 	SliderRealesed2 = true;
 	SliderRealesed = true;
-	mThread->Resume();
+	if (misPlaying)
+	{
+		mThread->Resume();
+	}
 	timer->Start(-1);
 }
 /*
