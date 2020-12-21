@@ -210,11 +210,7 @@ void MainFrame::initToolBar()
 */
 void MainFrame::setCurrTrack(Node *track)
 {
-	if (isTrackLoop())
-	{
-		setThread(currTrackPTR->track->path);
-	}
-	else if (track != nullptr)
+	if (track != nullptr)
 	{
 		if (currTrackPTR != nullptr)
 		{
@@ -252,14 +248,20 @@ void MainFrame::setCurrTrack(Node *track)
 */
 void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 {
-	
 	//TODO check if there is a activated track or playlist is empty
 	
 	if (mThread != nullptr && !mThread->IsPaused())
 	{
 		if (mThread->isOver())
-		{
-			setCurrTrack(currTrackPTR->next);
+		{	
+			if (isTrackLoop())
+			{
+				setCurrTrack(currTrackPTR);
+			}
+			else
+			{
+				setCurrTrack(currTrackPTR->next);
+			}
 		}
 		else //update time slider and status
 		{
@@ -413,7 +415,7 @@ void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 	{
 		if (isListLoop())
 		{
-			//setCurrTrack(mLibraryPanel->);
+			//setCurrTrack(mPlaylistPanel-);
 		}
 	}
 }
@@ -643,7 +645,6 @@ void MainFrame::readWavInfo(const string &path)
 	inFile.seekg(sizeof(uint8_t) * 4, ios_base::cur);
 	inFile.read(reinterpret_cast<char *>(&ID), sizeof(uint8_t) * 4);
 
-
 	while (!inFile.eof() || strncmp(ID, ITRK, 4) == 0)
 	{
 		inFile.read(reinterpret_cast<char *>(&ID), sizeof(uint8_t) * 4);
@@ -713,9 +714,7 @@ void MainFrame::saveMasterList()
 			outFile << '\n';
 		}
 	}
-	
 	outFile.close();
-	
 }
 /*
 * reads the empty space after a tag until the next tag is found
