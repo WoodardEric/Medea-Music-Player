@@ -1,3 +1,18 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  AudioThread.cpp
+
+ @brief:
+
+ Thread that reads audio from a file and sends the buffer to 
+ the audio stream
+ 
+
+ @author Eric Woodard
+ @date   12/18/2020
+
+ **********************************************************************/
 #include "AudioThread.h"
 /*
 * Audio Thread constructor
@@ -38,25 +53,8 @@ void *AudioThread::Entry()
 			
 			Sleep(5);
 		}
-
 		mIsOver = true;
 		Sleep(10);		
 	}
 	return NULL;
 }
-
-//found a better way to handle changing files
-//will remove once new aprouch is finalized 
-
-//void AudioThread::changeFile()
-//{
-//	mPath = mNewPath;
-//	delete mFile;
-//	delete mAudio;
-//	mFile = new MusicFile(mPath);
-//	mAudio = new AudioManager(*mFile);
-//	mTimeSlider->SetValue(0);
-//	mTimeSlider->SetMax(mFile->getDataSize());
-//	mIsOver = false;
-//	mAudio->startStream();
-//}

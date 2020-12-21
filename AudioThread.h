@@ -1,3 +1,17 @@
+/**********************************************************************
+ Medea: A Digital Music Player
+
+ @file  AudioThread.h
+
+ @brief:
+
+ Thread that reads audio from a file and sends the buffer to
+ the audio stream
+
+ @author Eric Woodard
+ @date   12/18/2020
+
+ **********************************************************************/
 #ifndef AUDIOTHREAD_H
 #define AUDIOTHREAD_H
 
@@ -16,7 +30,7 @@ class AudioThread : public wxThread
 public:
 	AudioThread(string path, wxSlider *timeSlider);
 	virtual void *Entry();
-	//void setPath(string path) { mNewPath = path; }
+	
 	void setVolume(float vol) { mAudio->setVolume(vol); }
 	long getCounter() const { return mAudio->getCounter(); }
 	void setCounter(long bytes) { mAudio->setCounter(mTimeSlider->GetValue() / 4); }
@@ -29,7 +43,6 @@ private:
 	AudioManager *mAudio;
 
 	string mPath; //current file
-	//string mNewPath; //path to new file
 	long mfileUpdatePos; //location of bytes file should seek to
 	bool mIsOver; //true if end if audio data reached in file
 
