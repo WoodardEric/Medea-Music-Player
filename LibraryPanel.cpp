@@ -13,6 +13,7 @@
  **********************************************************************/
 #include "LibraryPanel.h"
 #include "MainFrame.h"
+
  /*
  * LibraryPanel constructor
  *
@@ -44,6 +45,7 @@ LibraryPanel::LibraryPanel(wxPanel *parent, vector<Track> *vec,
 	Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &LibraryPanel::OnRightClick, this, ID_LIBRARY);
 	Bind(wxEVT_LIST_COL_CLICK, &LibraryPanel::OnColClick, this, ID_LIBRARY);
 }
+
 /*
  * repopulates LibraryCtrl from sorted library selected by user
  */
@@ -69,6 +71,7 @@ void LibraryPanel::recreateList()
 	
 	mLibraryCtrl->Show();
 }
+
 /*
  * Called when mLibraryCtrl item is ativated by double click or enter.
  * Selects which item(s) to be send to the playlist.
@@ -79,6 +82,7 @@ void LibraryPanel::OnAtivate(wxListEvent &event)
 {	
 	sendActivated(mLibraryCtrl->GetFirstSelected());
 }
+
 /*
  * Called when mLibraryCtrl item is right clicked
  * Displays a popup menu at item location
@@ -94,6 +98,7 @@ void LibraryPanel::OnRightClick(wxListEvent &event)
 	mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(LibraryPanel::OnPopupClick), NULL, this);
 	PopupMenu(&mnu);
 }
+
 /*
  * Called when popup menu item is selected
  * Handles which popup menu item is selected
@@ -112,6 +117,7 @@ void LibraryPanel::OnPopupClick(wxCommandEvent &event)
 		break;
 	}
 }
+
 /*
  * Called when colum header is left clicked
  * resorts the library based on user selection
@@ -133,7 +139,6 @@ void LibraryPanel::OnColClick(wxListEvent &event)
 
 		toggleByTitle();
 		recreateList();
-		
 	}
 	else if (event.GetColumn() == 2)
 	{
@@ -145,6 +150,7 @@ void LibraryPanel::OnColClick(wxListEvent &event)
 		{
 			mReversed = false;
 		}
+
 		toggleByAlbum();
 		recreateList();
 	}
@@ -158,12 +164,14 @@ void LibraryPanel::OnColClick(wxListEvent &event)
 		{
 			mReversed = false;
 		}
+
 		toggleByArtist();
 		recreateList();
 	}
 	else
 		event.Skip();
 }
+
 /*
 * Toggles sorting state to sort by title while setting other states to false.
 */
@@ -173,6 +181,7 @@ void LibraryPanel::toggleByTitle()
 	mSortByAlbum = false;
 	mSortByArtist = false;
 }
+
 /*
 * Toggles sorting state to sort by artist while setting other states to false.
 */
@@ -182,6 +191,7 @@ void LibraryPanel::toggleByArtist()
 	mSortByAlbum = false;
 	mSortByArtist = true;
 }
+
 /*
 * Toggles sorting state to sort by album while setting other states to false.
 */
@@ -191,6 +201,7 @@ void LibraryPanel::toggleByAlbum()
 	mSortByAlbum = true;
 	mSortByArtist = false;
 }
+
 /*
 * sends selected item(s) to playlist. If playlist is empty then populates 
 * the playlist based on current sorting selection.

@@ -34,6 +34,7 @@ PlaylistPanel::PlaylistPanel(wxPanel *parent) : wxPanel(parent, wxID_ANY)
 	Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &PlaylistPanel::OnRightClick, this, ID_LIST);
 	Bind(wxEVT_LIST_ITEM_ACTIVATED, &PlaylistPanel::OnAtivate, this, ID_LIST);
 }
+
 /*
 * called when mPlaylist item is double clicked or enter is pressed with item selected.
 * Sets seleced list item as the currently playing track.
@@ -47,6 +48,7 @@ void PlaylistPanel::OnAtivate(wxListEvent &event)
 	ptr = mPlaylist.traverse(mPlaylistCtrl->GetFirstSelected());
 	frame->setCurrTrack(ptr);
 }
+
 /*
 * called when mPlaylist item is right clicked.
 * Displays menu at item loction where user can
@@ -67,6 +69,7 @@ void PlaylistPanel::OnRightClick(wxListEvent &event)
 	mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PlaylistPanel::OnPopupClick), NULL, this);
 	PopupMenu(&mnu);
 }
+
 /*
 * Called when mPlaylistCtrl pop up menu item selected.
 * Determines the item selected and takes care of the logic
@@ -144,8 +147,8 @@ void PlaylistPanel::focusTrack(const Track *currTrack, const Track *nextTrack)
 	mPlaylistCtrl->Select(index, false);
 	index = mPlaylistCtrl->findTrack(nextTrack);
 	mPlaylistCtrl->Select(index, true);
-	//mPlaylistCtrl->SetItemState(index,  wxLIST_STATE_SELECTED , wxLIST_STATE_FOCUSED);
 }
+
 /*
 * Sets PlaylistCtrl focus to new curretnly playing track
 *
@@ -156,6 +159,7 @@ void PlaylistPanel::focusTrack(const Track *track)
 	long index = mPlaylistCtrl->findTrack(track);
 	mPlaylistCtrl->Select(index, true);
 }
+
 /*
 * Saves current playlist to a csv file by saving track's title, album, and path.
 *
@@ -181,6 +185,7 @@ void PlaylistPanel::saveCurrPlaylist(string path)
 	outFile << ptr->track->title << ',' << ptr->track->album << ','
 		<< ',' << ptr->track->path;
 }
+
 /*
 * clear mPlaylistCtrl and mPlaylist of all items
 */

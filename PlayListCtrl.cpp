@@ -43,6 +43,7 @@ PlaylistCtrl::PlaylistCtrl(wxWindow *parent)
 	InsertColumn(2, albumCol);
 
 }
+
 /*
 * repopulates PlaylistCtrl
 *
@@ -77,6 +78,7 @@ void PlaylistCtrl::addTrack(const Track *track, const long index)
 	SetItem(itemIndex, 1, title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
+
 /*
 * adds a track to end of the PlaylistCtrl
 *
@@ -90,6 +92,7 @@ void PlaylistCtrl::appendTrack(const Track *track)
 	SetItem(itemIndex, 1, track->title); //want this for col. 2
 	SetItem(itemIndex, 2, track->album); //want this for col. 2
 }
+
 /*
 * removes a track from the playlist at a specific index
 *
@@ -99,7 +102,13 @@ void PlaylistCtrl::removeTrack(const long index)
 {
 	DeleteItem(index);
 }
-
+/*
+* search for a track in the playlist
+*
+* @param track being serched for
+* @return the index of the track in the playlist
+* or -1 if track is not in the playlist
+*/
 long PlaylistCtrl::findTrack(const Track *track)
 {
 	for (long i = 0; i < GetItemCount(); ++i)
@@ -109,7 +118,5 @@ long PlaylistCtrl::findTrack(const Track *track)
 			return i;
 		}
 	}
-
 	return -1;
-	
 }

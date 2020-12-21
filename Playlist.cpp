@@ -53,6 +53,7 @@ void Playlist::addFront(Track *track)
 
     ++mSize;
 }
+
 /*
  * Adds track to the rear of the playList
  *
@@ -72,6 +73,7 @@ void Playlist::addRear(Track *track)
 
     ++mSize;
 }
+
 /*
  * deletes every node in the playlist and sets mSize to 0
  *
@@ -88,6 +90,7 @@ void Playlist::clear()
     mTail = nullptr;
     mSize = 0;
 }
+
 /*
  * moves a track node to a different location in the playlist
  *
@@ -138,6 +141,7 @@ void Playlist::move(Node *node, long index)
         mTail->next = nullptr;
     }
 }
+
 /*
  * removes a track node from a specific location in the playlist
  *

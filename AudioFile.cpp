@@ -20,6 +20,7 @@ MusicFile::~MusicFile()
 {
 	fileStream.close();
 }
+
 /*
 * reads audio samples into the buffer depending on sample size in bits
 * 
@@ -52,6 +53,7 @@ int MusicFile::getCurrTrackTime(const long &numFrames)
 	long bytes = numFrames * header.blockAlighn;
 	return bytes / (header.sampleRate * header.numChannels * header.bitsPerSample / 8);
 }
+
 /*
 * changes the cursor location in the file by a certain number of bytes
 *
@@ -63,6 +65,7 @@ void MusicFile::seek(long bytes)
 	if (bytes > 0)
 		fileStream.seekg(bytes, ios_base::cur);
 }
+
 /*
 * converts a number of frames into seconds
 *
@@ -86,6 +89,7 @@ string MusicFile::timeToString(const long &numFrames)
 
 	return stream.str();
 }
+
 /*
 * converts seconds into a string displaying minutes:seconds
 *

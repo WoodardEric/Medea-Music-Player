@@ -29,6 +29,7 @@ bool MedeaApp::OnInit()
 
     return true;
 }
+
 /*
 * creates the master library from a file then creates the indexes
 */

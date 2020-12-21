@@ -39,6 +39,7 @@ AudioManager::~AudioManager()
 {
 	err = Pa_Terminate();
 }
+
 /*
 * Opens and initilizes an audio stream to the sound card
 * 
@@ -60,6 +61,7 @@ void AudioManager::openStream(const int numChannels, const int bitsPerSample, co
 		NULL, //no callback, use blocking API 
 		NULL); //no callback, so no callback userData 
 }
+
 /*
 * starts an audio stream and sets error status on return
 */
@@ -67,6 +69,7 @@ void AudioManager::startStream()
 {
 	err = Pa_StartStream(audioStream);
 }
+
 /*
 * stops an audio stream and sets error status on return
 */
@@ -74,6 +77,7 @@ void AudioManager::stopStream()
 {
 	err = Pa_StopStream(audioStream);
 }
+
 /*
 * closes an audio stream and sets error status on return
 */
@@ -81,6 +85,7 @@ void AudioManager::closeStream()
 {
 	err = Pa_CloseStream(audioStream);
 }
+
 /*
 * aborts an audio stream and sets error status on return
 */
@@ -88,6 +93,7 @@ void AudioManager::Terminate()
 {
 	err = Pa_Terminate();
 }
+
 /*
 * checks to see if audio stream is active
 * 
@@ -97,6 +103,7 @@ bool AudioManager::isStreaming() const
 {
 	return Pa_IsStreamActive(audioStream);
 }
+
 /*
 * sets the stream parameters
 *
@@ -124,6 +131,7 @@ void AudioManager::setParameters(const int numChannels, const int bitsPerSample)
 		err = paSampleFormatNotSupported;
 	}	
 }
+
 /*
 * turns the error code into human readable text
 *
@@ -133,6 +141,7 @@ string AudioManager::getErrorMessage() const
 {
 	return Pa_GetErrorText(err);
 }
+
 /*
 * clears buffer by setting all values to 0
 */
@@ -144,6 +153,7 @@ void AudioManager::clearBuffer()
 		p[i] = 0;
 	}
 }
+
 /*
 * fill buffer from a file, process audio, then sends it to the stream
 * 
@@ -173,6 +183,7 @@ bool AudioManager::playAudio(MusicFile *file)
 
 	return false;
 }
+
 /*
 * processes each sample in the buffer
 * 

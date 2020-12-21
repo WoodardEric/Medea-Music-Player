@@ -14,6 +14,7 @@
 
  **********************************************************************/
 #include "AudioThread.h"
+
 /*
 * Audio Thread constructor
 * 
@@ -29,6 +30,7 @@ AudioThread::AudioThread(string path, wxSlider *timeSlider)
 	mfileUpdatePos = -1;
 	mIsOver = false;
 }
+
 /*
 * Threads point of entry. Loops reading a file and sending audio to stream
 * Lasts forever unless destoryed by main thread or the program ends

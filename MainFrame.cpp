@@ -13,6 +13,7 @@
 
  **********************************************************************/
 #include "MainFrame.h"
+
 /*
 * MainFrame constructor
 * 
@@ -57,8 +58,12 @@ MainFrame::MainFrame(wxSize size,
 	Bind(wxEVT_TIMER, &MainFrame::OnTimer, this);
 	
 	timer->Start(10);
-	
 }
+/*
+* Starts new audio thread 
+*
+* @param path the loction of the auido file on the cumputer
+*/
 void MainFrame::setThread(string path)
 {
 	mThread = new AudioThread(path, timeSlider);
@@ -120,40 +125,25 @@ void MainFrame::initMenu()
 	SetMenuBar(menuBar);
 
 	//bind all menu events
-	Bind(wxEVT_MENU, &MainFrame::OnDir, this,
-		ID_DIR);
-	Bind(wxEVT_MENU, &MainFrame::OnScan, this,
-		ID_SCAN);
-	Bind(wxEVT_MENU, &MainFrame::OnExit, this,
-		wxID_EXIT);
+	Bind(wxEVT_MENU, &MainFrame::OnDir, this, ID_DIR);
+	Bind(wxEVT_MENU, &MainFrame::OnScan, this, ID_SCAN);
+	Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
 
-	Bind(wxEVT_MENU, &MainFrame::OnTitle, this,
-		ID_TITLE);
-	Bind(wxEVT_MENU, &MainFrame::OnAlbum, this,
-		ID_ALBUM);
-	Bind(wxEVT_MENU, &MainFrame::OnArtist, this,
-		ID_ARTIST);
+	Bind(wxEVT_MENU, &MainFrame::OnTitle, this,	ID_TITLE);
+	Bind(wxEVT_MENU, &MainFrame::OnAlbum, this,	ID_ALBUM);
+	Bind(wxEVT_MENU, &MainFrame::OnArtist, this, ID_ARTIST);
 
-	Bind(wxEVT_MENU, &MainFrame::OnPlay, this,
-		ID_PLAY);
-	Bind(wxEVT_MENU, &MainFrame::OnNext, this,
-		ID_NEXT);
-	Bind(wxEVT_MENU, &MainFrame::OnPrev, this,
-		ID_PREV);
-	Bind(wxEVT_MENU, &MainFrame::OnLoop, this,
-		ID_LOOP);
-	Bind(wxEVT_MENU, &MainFrame::OnLoopList, this,
-		ID_LOOPALL);
+	Bind(wxEVT_MENU, &MainFrame::OnPlay, this, ID_PLAY);
+	Bind(wxEVT_MENU, &MainFrame::OnNext, this, ID_NEXT);
+	Bind(wxEVT_MENU, &MainFrame::OnPrev, this, ID_PREV);
+	Bind(wxEVT_MENU, &MainFrame::OnLoop, this, ID_LOOP);
+	Bind(wxEVT_MENU, &MainFrame::OnLoopList, this, ID_LOOPALL);
 
-	Bind(wxEVT_MENU, &MainFrame::OnSave, this,
-		ID_SAVE);
-	Bind(wxEVT_MENU, &MainFrame::OnLoad, this,
-		ID_LOAD);
-	Bind(wxEVT_MENU, &MainFrame::OnClear, this,
-		ID_CLEAR);
+	Bind(wxEVT_MENU, &MainFrame::OnSave, this, ID_SAVE);
+	Bind(wxEVT_MENU, &MainFrame::OnLoad, this, ID_LOAD);
+	Bind(wxEVT_MENU, &MainFrame::OnClear, this, ID_CLEAR);
 
-	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,
-		wxID_ABOUT);
+	Bind(wxEVT_MENU, &MainFrame::OnAbout, this,	wxID_ABOUT);
 }
 
 /*setups up the tool bar*/
@@ -185,24 +175,19 @@ void MainFrame::initToolBar()
 
 	toolBar->AddControl(timeSlider);
 	toolBar->Realize();
-
 	SetToolBar(toolBar);
 
 	//Bind all tool bar events
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
-	//Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
+
 	Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
 	Bind(wxEVT_SCROLL_THUMBRELEASE, &MainFrame::OnTimeSliderFinish, this, ID_TIME_SLIDER);
-	//Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::OnTimeSliderScroll, this, ID_TIME_SLIDER);
 	
-	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPlay, this,
-		ID_PLAY);
-	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnNext, this,
-		ID_NEXT);
-	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPrev, this,
-		ID_PREV);
-	
+	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPlay, this, ID_PLAY);
+	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnNext, this, ID_NEXT);
+	Bind(wxEVT_COMMAND_TOOL_CLICKED, &MainFrame::OnPrev, this, ID_PREV);
 }
+
 /*
 * sets a track to be read and played
 * 
@@ -240,6 +225,7 @@ void MainFrame::setCurrTrack(Node *track)
 		}
 	}
 }
+
 /*
 * called after an interval of microseconds passes
 * used to play audio
@@ -285,6 +271,7 @@ void MainFrame::OnTimer(wxTimerEvent &WXUNUSED(event))
 		}
 	}
 }
+
 /*
 * called when exit menu clicked
 * Closes the program
@@ -312,9 +299,10 @@ void MainFrame::OnDir(wxCommandEvent &WXUNUSED(event))
 		wxMessageBox(mLibraryPath);
 	}
 }
+
 /*
 * called when scan menu clicked
-* scans library directory and adds track to master library
+* scans library directory and adds tracks to master library
 *
 * @param event the menu event being caught
 */
@@ -339,6 +327,7 @@ void MainFrame::OnScan(wxCommandEvent &WXUNUSED(event))
 
 	saveMasterList();
 }
+
 /*
 * called when sort by title menu clicked
 * Triggers the program to sort by title
@@ -350,6 +339,7 @@ void MainFrame::OnTitle(wxCommandEvent &WXUNUSED(event))
 	mLibraryPanel->toggleByTitle();
 	mLibraryPanel->recreateList();
 }
+
 /*
 * called when sort by album menu clicked
 * Triggers the program to sort by album 
@@ -361,6 +351,7 @@ void MainFrame::OnAlbum(wxCommandEvent &WXUNUSED(event))
 	mLibraryPanel->toggleByAlbum();
 	mLibraryPanel->recreateList();
 }
+
 /*
 * called when sort by artist menu clicked
 * Triggers the program to sort by artist
@@ -372,13 +363,16 @@ void MainFrame::OnArtist(wxCommandEvent &WXUNUSED(event))
 	mLibraryPanel->toggleByArtist();
 	mLibraryPanel->recreateList();
 }
+
 void MainFrame::toggleisPlaying()
 {
 	if (currTrackPTR == nullptr)
 	{
 		return;
 	}
+
 	misPlaying = !misPlaying;
+
 	if (!misPlaying)
 	{
 		mThread->Pause();
@@ -388,6 +382,7 @@ void MainFrame::toggleisPlaying()
 		mThread->Resume();
 	}
 }
+
 /*
 * called when play menu clicked
 * Toggles the audio stream to start/stop
@@ -419,6 +414,7 @@ void MainFrame::OnNext(wxCommandEvent &WXUNUSED(event))
 		}
 	}
 }
+
 /*
 * called when prev menu clicked
 * calls currTrack to the previous node in the playlist
@@ -439,6 +435,7 @@ void MainFrame::OnPrev(wxCommandEvent &WXUNUSED(event))
 		}
 	}
 }
+
 /*
 * called when loop menu clicked
 * toggles loopTrack
@@ -449,6 +446,7 @@ void MainFrame::OnLoop(wxCommandEvent &WXUNUSED(event))
 {
 	toggleLoopTrack();
 }
+
 /*
 * called when loop all menu clicked
 * toggles loopAll
@@ -459,6 +457,7 @@ void MainFrame::OnLoopList(wxCommandEvent &WXUNUSED(event))
 {
 	toggleLoopList();
 }
+
 /*
 * called when save menu clicked
 * saves playlist to a file
@@ -469,6 +468,7 @@ void MainFrame::OnSave(wxCommandEvent &WXUNUSED(event))
 {
 	mPlaylistPanel->saveCurrPlaylist("Data/");
 }
+
 /*
 * called when Load menu clicked
 * Loads a playlist from a file
@@ -479,6 +479,7 @@ void MainFrame::OnLoad(wxCommandEvent &WXUNUSED(event))
 {
 	loadCurrPlayList("Data/");
 }
+
 /*
 * called when clear menu clicked
 * clears the current playlist
@@ -489,6 +490,7 @@ void MainFrame::OnClear(wxCommandEvent &WXUNUSED(event))
 {
 	mPlaylistPanel->clearPlaylist();
 }
+
 /*
 * called when about menu clicked
 * Creates a popup dialog to dispaly program info
@@ -500,6 +502,7 @@ void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event))
 	wxString message("Medea Music Player: \nBy Eric Woodard for cs151\nA simple wav player\nThanks to icon king1 for the icons!\nFrom: https://freeicons.io/icon-list/material-icons-alert-and-av?page=1 \n\nLibrarys used:\nPortaudio\nwxWidgets\n");
 	wxMessageBox(message);
 }
+
 /*
 * called when volume slider moved
 * sets the audio volume
@@ -510,6 +513,7 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 {
 	mThread->setVolume(volSlider->GetValue() / 100.0f);
 }
+
 /*
 * called when timer slider moves
 * seeks through the audio file
@@ -526,6 +530,7 @@ void MainFrame::OnTimeSlider(wxScrollEvent &event)
 	if (!mThread->IsPaused())
 		mThread->Pause();
 }
+
 /*
 * called when timer slider finishes moving
 * resumes the timer and audio thread
@@ -554,6 +559,7 @@ void MainFrame::OnTimeSliderFinish(wxScrollEvent &WXUNUSED(event))
 	}
 	timer->Start(-1);
 }
+
 /*
 * loads a playlist from a file
 *
@@ -587,6 +593,7 @@ void MainFrame::loadCurrPlayList(string path)
 		mPlaylistPanel->appendTrack(&(*mLibrary)[searchByTitle(*mLibrary, track.title)]);
 	}
 }
+
 /*
 * reads wav header and tag info from a file. Then adds a new track to the master library.
 * Used while scanning music library directory
@@ -674,6 +681,7 @@ void MainFrame::readWavInfo(const string &path)
 	inFile.close();
 	mLibrary->push_back(track);
 }
+
 /*
 * save the masterList as a csv file
 */
@@ -700,6 +708,7 @@ void MainFrame::saveMasterList()
 	}
 	outFile.close();
 }
+
 /*
 * reads the empty space after a tag until the next tag is found
 */

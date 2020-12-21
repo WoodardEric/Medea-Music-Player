@@ -7,6 +7,7 @@
  * 
  */
 #include "index.h"
+
  /**
   * attaches the vector of pointers to the vector of students
   *
@@ -18,6 +19,7 @@ void attachIndexToVector(vector<Track *> &index, vector<Track> &vec)
     for (int i = 0; i < vec.size(); ++i)
         index.push_back(&vec[i]);
 }
+
 /**
  * uses selction sort to sort pointers by last name in alphabetical order
  *
@@ -43,6 +45,7 @@ void sortByTitle(vector<Track> &index)
 
     }
 }
+
 /**
  * uses selction sort to sort pointers by ssn in ascending order
  *
@@ -110,6 +113,7 @@ void sortByArtist(vector<Track *> &index)
         index[startscan] = minValue;
     }
 }
+
 /**
  * uses binary search to find index in the vector of last name being searched for
  *
@@ -138,6 +142,7 @@ int searchByTitle(vector<Track> &index, string title)
     }
     return -1;
 }
+
 /**
  * uses binary search to find index in the vector of ssn being searched for
  *
@@ -164,6 +169,7 @@ int searchByAlbum(vector<Track *> &index, string album)
     }
     return -1;
 }
+
 /**
  * uses binary search to find index in the vector of the first name being searched for
  *
