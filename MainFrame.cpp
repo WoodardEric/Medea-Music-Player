@@ -32,8 +32,7 @@ MainFrame::MainFrame(wxSize size,
 	mArtistIndex = &artistIndex;
 	mLibraryPath = "Data/"; 
 	misPlaying = false;
-	SliderRealesed = false;
-	SliderRealesed2 = false;
+
 	//sets icon in top corner
 	SetIcon(wxICON(icon));
 	
@@ -191,7 +190,8 @@ void MainFrame::initToolBar()
 
 	//Bind all tool bar events
 	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnSlider, this, ID_VOL_SLIDER);
-	Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
+	//Bind(wxEVT_COMMAND_SLIDER_UPDATED, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
+	Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::OnTimeSlider, this, ID_TIME_SLIDER);
 	Bind(wxEVT_SCROLL_THUMBRELEASE, &MainFrame::OnTimeSliderFinish, this, ID_TIME_SLIDER);
 	//Bind(wxEVT_SCROLL_THUMBTRACK, &MainFrame::OnTimeSliderScroll, this, ID_TIME_SLIDER);
 	
@@ -520,38 +520,11 @@ void MainFrame::OnSlider(wxCommandEvent &WXUNUSED(event))
 * 
 * TODO: skip event after slider thumb release
 */
-void MainFrame::OnTimeSlider(wxCommandEvent &event)
+void MainFrame::OnTimeSlider(wxScrollEvent &event)
 {
-	if (!SliderRealesed)
-	{
-		timer->Stop();
-		if(!mThread->IsPaused())
+	timer->Stop();
+	if (!mThread->IsPaused())
 		mThread->Pause();
-	}
-		//TAKEN FROM HTTPS://WIKI.WXWIDGETS.ORG/WXSLIDER_STEP_INTERVALS
-		int val = timeSlider->GetValue();
-
-		int remainder = val % 2048; // THE STEP INTERVAL.
-
-		//IF THE VALUE IS NOT EVENLY DIVISIBLE BY THE STEP INTERVAL,
-		//SNAP THE VALUE TO AN EVEN INTERVAL.
-		if (remainder != 0)
-		{
-			val -= remainder;
-			//timeslider->setvalue(val);
-		}
-
-		mThread->setFilePos(val);
-
-	//After the slider thumb release OnTimeSlider is called two more times
-	//this hack makes sure the thread isn't paused in those calls.
-	if(SliderRealesed)
-	{
-		if(SliderRealesed2)
-			SliderRealesed2 = false;
-		else
-			SliderRealesed = false;
-	}
 }
 /*
 * called when timer slider finishes moving
@@ -561,9 +534,20 @@ void MainFrame::OnTimeSlider(wxCommandEvent &event)
 *
 */
 void MainFrame::OnTimeSliderFinish(wxScrollEvent &WXUNUSED(event))
-{
-	SliderRealesed2 = true;
-	SliderRealesed = true;
+{	
+	//TAKEN FROM HTTPS://WIKI.WXWIDGETS.ORG/WXSLIDER_STEP_INTERVALS
+	int val = timeSlider->GetValue();
+	int remainder = val % 2048; // THE STEP INTERVAL.
+
+	//IF THE VALUE IS NOT EVENLY DIVISIBLE BY THE STEP INTERVAL,
+	//SNAP THE VALUE TO AN EVEN INTERVAL.
+	if (remainder != 0)
+	{
+		val -= remainder;
+		timeSlider->SetValue(val);
+	}
+
+	mThread->setFilePos(val);
 	if (misPlaying)
 	{
 		mThread->Resume();
