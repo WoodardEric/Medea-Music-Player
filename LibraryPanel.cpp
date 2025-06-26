@@ -1,7 +1,7 @@
 /**********************************************************************
  Medea: A Digital Music Player
 
- @file  LibraryPanel.h
+@file  LibraryPanel.cpp
 
  @brief:
 
