@@ -8,7 +8,7 @@ From: https://freeicons.io/icon-list/material-icons-alert-and-av<br/>
 For now can only build on windows with visual studio 2019.<br/>
 *Make sure to read the notes after each step before following the guides*<br/><br/>
 
-1) Download and install visual sudio 2019
+1) Download and install visual studio 2019
 https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-160
 
 2) clone wxWidgets to your pc
@@ -49,7 +49,7 @@ In step 10 you only need to build for x64
 Skip the "Building without ASIO support" section
 
 6) Add a system environment variable named PORTAUDIO 
-that points to the directy where you cloned portaudio
+that points to the directory where you cloned portaudio
 
 This step is similar to the video on building wxWidgets
 But this guide also goes through environment variables
